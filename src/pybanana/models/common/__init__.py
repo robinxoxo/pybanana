@@ -1,6 +1,6 @@
-from .bio import Bio
+from .bio import Bio, BioEntry
 from .category import ModCategory
-from .credits import Author, Credit, Credits, CreditGroup
+from .credits import Author, Credits, CreditGroup, AffiliatedStudio
 from .embeddable import Embeddable
 from .online import OnlineStatus
 from .preview import PreviewMedia, PreviewMediaImage
@@ -14,6 +14,7 @@ from .license import LicenseChecklist
 
 __all__ = [
     "Bio",
+    "BioEntry",
     "ModCategory",
     "ManagerRecord",
     "ModeratorRecord",
@@ -21,9 +22,9 @@ __all__ = [
     "LicenseChecklist",
 
     "Author",
-    "Credit",
     "Credits",
     "CreditGroup",
+    "AffiliatedStudio",
 
     "Embeddable",
     "OnlineStatus",

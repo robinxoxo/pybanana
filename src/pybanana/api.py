@@ -82,13 +82,13 @@ class GameBananaAPI:
     def get_moderators(self) -> ModeratorResponse:
         """Get a list of moderators."""
         data = self._get_data("/Member/Moderators")
-        return ModeratorResponse(records=data.get("_aRecords", []))
+        return ModeratorResponse.from_dict(data)
 
-    def get_game_managers(self, page: int = 1, per_page: int = 20) -> GameManagerResponse:
+    def get_managers(self, page: int = 1, per_page = 15) -> GameManagerResponse:
         """Get a list of game managers with pagination."""
-        params = { "page": page, "perpage": per_page }
+        params = { "_nPage": page, "_nPerpage": per_page } # only 15 seems tow work.
         data = self._get_data("/Member/GameManagers", params)
-        return GameManagerResponse(records=data.get("_aRecords", []), metadata=data.get("_aMetadata", {}))
+        return GameManagerResponse.from_dict(data)
 
     def get_download_url(self, model_name: ContentType, item_id: int, file_id: int) -> str:
         """Get the download URL for a specific file."""
@@ -106,7 +106,7 @@ class GameBananaAPI:
         model: ContentType,
         order: OrderResult = OrderResult.RELEVANCE,
         page: int = 1,
-        per_page: int = 20,
+        per_page: int = 15,
         fields: Optional[str] = None,
     ) -> ResultResponse:
         """Search for content across GameBanana."""
@@ -120,5 +120,5 @@ class GameBananaAPI:
         }
         
         data = self._get_data("/Util/Search/Results", params)
-        return ResultResponse(records=data.get("_aRecords", []), record_count=data.get("_nRecordCount", 0))
+        return ResultResponse.from_dict(data)
 

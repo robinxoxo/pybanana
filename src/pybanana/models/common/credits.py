@@ -3,23 +3,41 @@ from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional
 
 @dataclass
+class AffiliatedStudio:
+    profile_url: str
+    name: str
+    flag_url: str
+    banner_url: str
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> "AffiliatedStudio":
+        return cls(
+            profile_url=data["_sProfileUrl"],
+            name=data["_sName"],
+            flag_url=data["_sFlagUrl"],
+            banner_url=data["_sBannerUrl"]
+        )
+
+@dataclass
 class Author:
     role: str
-    id: int
     name: str
-    upic_url: Optional[str]
-    profile_url: str
-    is_online: bool
+    id: Optional[int] = None
+    upic_url: Optional[str] = None
+    profile_url: Optional[str] = None
+    is_online: Optional[bool] = None
+    affiliated_studio: Optional[AffiliatedStudio] = None
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Author":
         return cls(
             role=data["_sRole"],
-            id=data["_idRow"],
             name=data["_sName"],
+            id=data.get("_idRow"),
             upic_url=data.get("_sUpicUrl"),
-            profile_url=data["_sProfileUrl"],
-            is_online=data["_bIsOnline"]
+            profile_url=data.get("_sProfileUrl"),
+            is_online=data.get("_bIsOnline"),
+            affiliated_studio=AffiliatedStudio.from_dict(data["_aAffiliatedStudio"]) if "_aAffiliatedStudio" in data else None
         )
 
 @dataclass
@@ -35,31 +53,14 @@ class CreditGroup:
         )
 
 @dataclass
-class Credit:
-    """A credit entry."""
-    member_id: int
-    name: str
-    role: str
-    link: Optional[str] = None
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Credit":
-        return cls(
-            member_id=data.get("_idMember"),
-            name=data.get("_sName", ""),
-            role=data.get("_sRole", ""),
-            link=data.get("_sLink")
-        )
-
-@dataclass
 class Credits:
     """Credits section."""
-    entries: List[Credit] = field(default_factory=list)
+    groups: List[CreditGroup] = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Credits":
-        if not data:
+        if not data or "_aCredits" not in data:
             return cls([])
         return cls(
-            entries=[Credit.from_dict(credit) for credit in data]
+            groups=[CreditGroup.from_dict(group) for group in data["_aCredits"]]
         )
