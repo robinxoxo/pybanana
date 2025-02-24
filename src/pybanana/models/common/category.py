@@ -1,6 +1,6 @@
 """Category-related shared components."""
 from dataclasses import dataclass
-from typing import Dict, Any
+from typing import Dict, Optional, Any
 
 @dataclass
 class ModCategory:
@@ -13,9 +13,9 @@ class ModCategory:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "ModCategory":
         return cls(
-            id=data.get("_idRow", 0),
-            name=data.get("_sName", ""),
-            item_count=data.get("_nItemCount", 0),
-            category_count=data.get("_nCategoryCount", 0),
-            url=data.get("_sUrl", "")
+            id=data.get("_idRow", 0) or 0,
+            name=data.get("_sName", "") or "",
+            item_count=data.get("_nItemCount", 0) or 0,
+            category_count=data.get("_nCategoryCount", 0) or 0,
+            url=data.get("_sUrl", "") or ""
         )

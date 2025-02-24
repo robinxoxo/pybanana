@@ -16,10 +16,10 @@ from .studio import StudioProfile
 @dataclass
 class ModProfile:
     """Mod profile information."""
-    base: Profile
+    base: Profile  # Required field - no default
     feedback_instructions: str = ""
     accessor_is_submitter: bool = False
-    is_trashed: bool = False
+    is_trashed: bool = False  
     is_withheld: bool = False
     name: str = ""
     updates_count: int = 0

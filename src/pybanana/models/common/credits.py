@@ -4,63 +4,62 @@ from typing import List, Dict, Any, Optional
 
 @dataclass
 class AffiliatedStudio:
-    profile_url: str
-    name: str
-    flag_url: str
-    banner_url: str
+    profile_url: str = ""
+    name: str = ""
+    flag_url: str = ""
+    banner_url: str = ""
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "AffiliatedStudio":
         return cls(
-            profile_url=data["_sProfileUrl"],
-            name=data["_sName"],
-            flag_url=data["_sFlagUrl"],
-            banner_url=data["_sBannerUrl"]
+            profile_url=data.get("_sProfileUrl", "") or "",
+            name=data.get("_sName", "") or "",
+            flag_url=data.get("_sFlagUrl", "") or "",
+            banner_url=data.get("_sBannerUrl", "") or ""
         )
 
 @dataclass
 class Author:
-    role: str
-    name: str
+    role: str = ""
+    name: str = ""
     id: Optional[int] = None
-    upic_url: Optional[str] = None
-    profile_url: Optional[str] = None
-    is_online: Optional[bool] = None
+    upic_url: str = ""
+    profile_url: str = ""
+    is_online: bool = False
     affiliated_studio: Optional[AffiliatedStudio] = None
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Author":
         return cls(
-            role=data["_sRole"],
-            name=data["_sName"],
-            id=data.get("_idRow"),
-            upic_url=data.get("_sUpicUrl"),
-            profile_url=data.get("_sProfileUrl"),
-            is_online=data.get("_bIsOnline"),
-            affiliated_studio=AffiliatedStudio.from_dict(data["_aAffiliatedStudio"]) if "_aAffiliatedStudio" in data else None
+            role=data.get("_sRole", "") or "",
+            name=data.get("_sName", "") or "",
+            id=data.get("_idRow") or 0,
+            upic_url=data.get("_sUpicUrl", "") or "",
+            profile_url=data.get("_sProfileUrl", "") or "",
+            is_online=data.get("_bIsOnline", False),
+            affiliated_studio=AffiliatedStudio.from_dict(data["_aAffiliatedStudio"]) if "_aAffiliatedStudio" in data and data["_aAffiliatedStudio"] else None
         )
 
 @dataclass
 class CreditGroup:
-    group_name: str
-    authors: List[Author]
+    group_name: str = ""
+    authors: List[Author] = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "CreditGroup":
         return cls(
-            group_name=data["_sGroupName"],
-            authors=[Author.from_dict(author) for author in data["_aAuthors"]]
+            group_name=data.get("_sGroupName", "") or "",
+            authors=[Author.from_dict(author) for author in data.get("_aAuthors", [])]
         )
 
 @dataclass
 class Credits:
-    """Credits section."""
     groups: List[CreditGroup] = field(default_factory=list)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Credits":
-        if not data or "_aCredits" not in data:
-            return cls([])
-        return cls(
-            groups=[CreditGroup.from_dict(group) for group in data["_aCredits"]]
-        )
+    def from_dict(cls, data: Optional[Dict[str, Any] | List[Dict[str, Any]]]) -> "Credits":
+        if data is None:
+            return cls()
+        if isinstance(data, list):
+            return cls(groups=[CreditGroup.from_dict(group) for group in data])
+        return cls(groups=[CreditGroup.from_dict(group) for group in data.get("_aGroups", [])])

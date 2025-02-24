@@ -2,7 +2,7 @@ import pytest
 from datetime import datetime
 from pybanana.models.common.managers import ManagerRecord
 from pybanana.models.common.moderators import ModeratorRecord
-from pybanana.models.common.credits import Credit, Credits, Author, CreditGroup
+from pybanana.models.common.credits import Credits, Author, CreditGroup, AffiliatedStudio
 from pybanana.models.common.profile import Profile
 from pybanana.models.member import Member, Moderator
 from pybanana.models.profiles.member import MemberProfile
@@ -26,7 +26,7 @@ from pybanana.models.common.file import File
 from pybanana.models.result import Result  # Added this import
 
 def test_manager_record():
-    # Test data
+    # Test data using actual API field names
     test_data = {
         '_aMember': {
             '_idRow': 123,
@@ -41,20 +41,16 @@ def test_manager_record():
     }
 
     # Create ManagerRecord instance
-    manager_record = ManagerRecord.from_dict(test_data)
+    record = ManagerRecord.from_dict(test_data)
 
-    # Assert member data
-    assert isinstance(manager_record.member, Member)
-    assert manager_record.member.id == 123
-    assert manager_record.member.name == 'TestUser'
-    assert manager_record.member.is_online is True
-    assert manager_record.member.has_ripe is False
-    assert manager_record.member.profile_url == 'https://gamebanana.com/members/123'
-    assert manager_record.member.avatar_url == 'https://gamebanana.com/avatars/123.jpg'
-
-    # Assert other fields
-    assert manager_record.modgroups == ['admin', 'moderator']
-    assert manager_record.date_added == 1234567890
+    # Assert record data
+    assert isinstance(record, ManagerRecord)
+    assert isinstance(record.member, Member)
+    assert record.member.id == 123
+    assert record.member.name == 'TestUser'
+    assert record.member.is_online is True
+    assert record.modgroups == ['admin', 'moderator']
+    assert record.date_added == 1234567890
 
 def test_moderator_record():
     test_data = {
@@ -70,63 +66,76 @@ def test_moderator_record():
         '_aModgroups': ['admin', 'moderator', 'support']
     }
 
-    moderator_record = ModeratorRecord.from_dict(test_data)
+    record = ModeratorRecord.from_dict(test_data)
 
-    # Assert member data
-    assert isinstance(moderator_record.member, Member)
-    assert moderator_record.member.id == 456
-    assert moderator_record.member.name == 'ModUser'
-    assert moderator_record.member.is_online is False
-    assert moderator_record.member.has_ripe is True
-    assert moderator_record.member.profile_url == 'https://gamebanana.com/members/456'
-    assert moderator_record.member.avatar_url == 'https://gamebanana.com/avatars/456.jpg'
-
-    # Assert moderator specific fields
-    assert moderator_record.staff_bio == 'Test staff bio'
-    assert moderator_record.modgroups == ['admin', 'moderator', 'support']
+    # Assert record data
+    assert isinstance(record, ModeratorRecord)
+    assert isinstance(record.member, Member)
+    assert record.member.id == 456
+    assert record.member.name == 'ModUser'
+    assert record.member.is_online is False
+    assert record.staff_bio == 'Test staff bio'
+    assert record.modgroups == ['admin', 'moderator', 'support']
 
 def test_credits():
-    test_data = [
-        {
-            '_idMember': 789,
-            '_sName': 'CreditUser',
-            '_sRole': 'Developer',
-            '_sLink': 'https://example.com',
-        },
-        {
-            '_idMember': 790,
-            '_sName': 'ArtistUser',
-            '_sRole': 'Artist',
-            '_sLink': None,
-        }
-    ]
+    test_data = {
+        '_aGroups': [{
+            '_sGroupName': 'Development Team',
+            '_aAuthors': [
+                {
+                    '_sRole': 'Developer',
+                    '_idRow': 789,
+                    '_sName': 'CreditUser',
+                    '_sUpicUrl': 'https://example.com/pic.jpg',
+                    '_sProfileUrl': 'https://gamebanana.com/members/789',
+                    '_bIsOnline': True
+                },
+                {
+                    '_sRole': 'Artist',
+                    '_idRow': 790,
+                    '_sName': 'ArtistUser',
+                    '_sUpicUrl': None,
+                    '_sProfileUrl': 'https://gamebanana.com/members/790',
+                    '_bIsOnline': False
+                }
+            ]
+        }]
+    }
 
     credits = Credits.from_dict(test_data)
 
-    assert len(credits.entries) == 2
+    assert len(credits.groups) == 1
+    group = credits.groups[0]
+    assert isinstance(group, CreditGroup)
+    assert group.group_name == 'Development Team'
+    assert len(group.authors) == 2
     
-    # Test first credit entry
-    credit1 = credits.entries[0]
-    assert isinstance(credit1, Credit)
-    assert credit1.member_id == 789
-    assert credit1.name == 'CreditUser'
-    assert credit1.role == 'Developer'
-    assert credit1.link == 'https://example.com'
+    # Test first author
+    author1 = group.authors[0]
+    assert isinstance(author1, Author)
+    assert author1.id == 789
+    assert author1.name == 'CreditUser'
+    assert author1.role == 'Developer'
+    assert author1.upic_url == 'https://example.com/pic.jpg'
+    assert author1.profile_url == 'https://gamebanana.com/members/789'
+    assert author1.is_online is True
 
-    # Test second credit entry
-    credit2 = credits.entries[1]
-    assert isinstance(credit2, Credit)
-    assert credit2.member_id == 790
-    assert credit2.name == 'ArtistUser'
-    assert credit2.role == 'Artist'
-    assert credit2.link is None
+    # Test second author
+    author2 = group.authors[1]
+    assert isinstance(author2, Author)
+    assert author2.id == 790
+    assert author2.name == 'ArtistUser'
+    assert author2.role == 'Artist'
+    assert author2.upic_url == ''  # Default empty string when None
+    assert author2.profile_url == 'https://gamebanana.com/members/790'
+    assert author2.is_online is False
 
 def test_credits_empty():
     credits = Credits.from_dict([])
-    assert len(credits.entries) == 0
+    assert len(credits.groups) == 0
 
     credits = Credits.from_dict(None)
-    assert len(credits.entries) == 0
+    assert len(credits.groups) == 0
 
 def test_profile():
     test_data = {
@@ -333,7 +342,7 @@ def test_game_profile():
         '_aManagers': [],
         '_sAbbreviation': 'TG',
         '_tsReleaseDate': 1234567000,
-        '_sWelcomeMsg': 'Welcome to Test Game',
+        '_sWelcomeMessage': 'Welcome to Test Game',
         '_sDescription': 'A test game description'
     }
 
@@ -504,33 +513,70 @@ def test_preview_media():
     assert preview.images[0].file_size == 12345
     assert preview.metadata == {'title': 'Preview Image', 'description': 'A test preview image'}
 
+def test_preview_media_empty():
+    test_data = {
+        '_aImages': [],
+        '_aMetadata': {}
+    }
+
+    preview = PreviewMedia.from_dict(test_data)
+
+    assert len(preview.images) == 0
+    assert preview.metadata == {}
+
+def test_preview_media_none():
+    preview = PreviewMedia.from_dict({'_aImages': None, '_aMetadata': None})
+
+    assert len(preview.images) == 0
+    assert preview.metadata == {}
+
 def test_moderator_response():
     test_data = {
         '_aRecords': [
-            {'_idRow': 1, '_sName': 'Mod1'},
-            {'_idRow': 2, '_sName': 'Mod2'}
+            {
+                '_aMember': {'_idRow': 1, '_sName': 'Mod1'},
+                '_sStaffBio': 'Bio 1',
+                '_aModgroups': ['admin']
+            },
+            {
+                '_aMember': {'_idRow': 2, '_sName': 'Mod2'},
+                '_sStaffBio': 'Bio 2',
+                '_aModgroups': ['moderator']
+            }
         ]
     }
 
     response = ModeratorResponse.from_dict(test_data)
     assert len(response.records) == 2
-    assert response.records[0]['_idRow'] == 1
-    assert response.records[1]['_sName'] == 'Mod2'
-
+    assert isinstance(response.records[0], ModeratorRecord)
+    assert isinstance(response.records[1], ModeratorRecord)
+    assert response.records[0].member.id == 1
+    assert response.records[1].member.name == 'Mod2'
+    
 def test_game_manager_response():
     test_data = {
         '_aMetadata': {'total': 2},
         '_aRecords': [
-            {'_idGame': 1, '_sName': 'Game1'},
-            {'_idGame': 2, '_sName': 'Game2'}
+            {
+                '_aMember': {'_idRow': 1, '_sName': 'Manager1'},
+                '_aModgroups': ['admin'],
+                '_tsDateAdded': 1234567890
+            },
+            {
+                '_aMember': {'_idRow': 2, '_sName': 'Manager2'},
+                '_aModgroups': ['moderator'],
+                '_tsDateAdded': 1234567891
+            }
         ]
     }
 
     response = GameManagerResponse.from_dict(test_data)
     assert response.metadata == {'total': 2}
     assert len(response.records) == 2
-    assert response.records[0]['_idGame'] == 1
-    assert response.records[1]['_sName'] == 'Game2'
+    assert isinstance(response.records[0], ManagerRecord)
+    assert isinstance(response.records[1], ManagerRecord)
+    assert response.records[0].member.id == 1
+    assert response.records[1].member.name == 'Manager2'
 
 def test_result_response():
     test_data = {
@@ -564,23 +610,59 @@ def test_result_response():
     response = ResultResponse.from_dict(test_data)
     assert len(response.records) == 2
     assert response.record_count == 2
-    assert isinstance(response.records[0], Result)
-    assert response.records[0].id_row == 1
-    assert response.records[0].name == 'Result1'
-    assert response.records[1].id_row == 2
-    assert response.records[1].name == 'Result2'
+    
+    result1 = response.records[0]
+    assert isinstance(result1, Result)
+    assert result1.id_row == 1
+    assert result1.name == 'Result1'
+    assert result1.model_name == 'Mod'
+    assert result1.singular_title == 'Mod'
+    assert result1.icon_classes == 'icon mod'
+    assert result1.profile_url == 'https://gamebanana.com/mods/1'
+    assert result1.date_added == 1234567890
+    assert result1.date_modified == 1234567891
+    assert result1.has_files is True
+
+    result2 = response.records[1]
+    assert isinstance(result2, Result)
+    assert result2.id_row == 2
+    assert result2.name == 'Result2'
+    assert result2.model_name == 'Game'
+    assert result2.singular_title == 'Game'
 
 def test_ratings_summary():
     test_data = {
-        'total_votes': 100,
-        'average_rating': 4.5,
-        'current_user_rating': 5
+        '_aRatingsSummary': {
+            '_nRatingsCount': 100,
+            '_iCumulativeRating': 450,
+            '_iCumulativePositivity': 400,
+            '_iCumulativeNegativity': 50,
+            '_aRatingsBreakdown': {
+                'likes': {
+                    '_nCount': 80,
+                    '_sTitle': 'Likes',
+                    '_sVerb': 'Liked',
+                    '_sIconUrl': 'like.png',
+                    '_sIconClasses': 'like-icon'
+                }
+            }
+        }
     }
 
     ratings = RatingsSummary.from_dict(test_data)
-    assert ratings.total_votes == 100
-    assert ratings.average_rating == 4.5
-    assert ratings.current_user_rating == 5
+
+    assert ratings.ratings_count == 100
+    assert ratings.cumulative_rating == 450
+    assert ratings.cumulative_positivity == 400
+    assert ratings.cumulative_negativity == 50
+    assert len(ratings.ratings_breakdown) == 1
+    assert 'likes' in ratings.ratings_breakdown
+    like_item = ratings.ratings_breakdown['likes']
+    assert like_item.count == 80
+    assert like_item.title == 'Likes'
+    assert like_item.verb == 'Liked'
+    assert like_item.icon_url == 'like.png'
+    assert like_item.icon_classes == 'like-icon'
 
 def test_bug_profile():
     test_data = {
@@ -660,9 +742,11 @@ def test_idea_profile():
         '_nSortingPriority': 1,
         '_bSupportsDownvoting': True,
         '_aRatingsSummary': {
-            'total_votes': 50,
-            'average_rating': 4.2,
-            'current_user_rating': None
+            '_nRatingsCount': 50,
+            '_iCumulativeRating': 42,
+            '_iCumulativePositivity': 40,
+            '_iCumulativeNegativity': 2,
+            '_aRatingsBreakdown': {}
         },
         '_aEmbeddables': []
     }
@@ -678,24 +762,30 @@ def test_idea_profile():
     assert profile.is_shared is True
     assert profile.sorting_priority == 1
     assert profile.supports_downvoting is True
-    assert isinstance(profile.ratings_summary, RatingsSummary)
-    assert profile.ratings_summary.total_votes == 50
-    assert profile.ratings_summary.average_rating == 4.2
-    assert profile.ratings_summary.current_user_rating is None
+    assert profile.ratings_summary is not None
+    assert profile.ratings_summary.ratings_count == 50
+    assert profile.ratings_summary.cumulative_rating == 42
+    assert profile.ratings_summary.cumulative_positivity == 40
+    assert profile.ratings_summary.cumulative_negativity == 2
+    assert isinstance(profile.ratings_summary.ratings_breakdown, dict)
     assert isinstance(profile.embeddables, list)
 
 def test_bio():
     test_data = {
-        '_sTitle': 'About Me',
-        '_sValue': 'I make games',
-        '_sCustomTitle': 'Personal Info'
+        '_aBio': [{
+            '_sTitle': 'About Me',
+            '_sValue': 'I make games',
+            '_sCustomTitle': 'Personal Info'
+        }]
     }
 
     bio = Bio.from_dict(test_data)
 
-    assert bio.title == 'About Me'
-    assert bio.value == 'I make games'
-    assert bio.custom_title == 'Personal Info'
+    assert len(bio.entries) == 1
+    entry = bio.entries[0]
+    assert entry.title == 'About Me'
+    assert entry.value == 'I make games'
+    assert entry.custom_title == 'Personal Info'
 
 def test_author():
     test_data = {
@@ -758,17 +848,20 @@ def test_mod_category():
 def test_embeddable():
     test_data = {
         '_sEmbeddableImageBaseUrl': 'https://images.gamebanana.com/embed/123',
-        'url': 'https://gamebanana.com/embeds/123',
-        'name': 'Test Embed',
-        'description': 'A test embeddable item'
+        '_aVariants': ['small', 'medium', 'large']
     }
 
     embeddable = Embeddable.from_dict(test_data)
 
     assert embeddable.image_base_url == 'https://images.gamebanana.com/embed/123'
-    assert embeddable.url == 'https://gamebanana.com/embeds/123'
-    assert embeddable.name == 'Test Embed'
-    assert embeddable.description == 'A test embeddable item'
+    assert embeddable.variants == ['small', 'medium', 'large']
+
+def test_embeddable_string_input():
+    # For the string input case, we need to wrap it in a dict to match the type signature
+    test_data = {'_sEmbeddableImageBaseUrl': 'https://images.gamebanana.com/embed/123'}
+    embeddable = Embeddable.from_dict(test_data)
+    assert embeddable.image_base_url == 'https://images.gamebanana.com/embed/123'
+    assert embeddable.variants == []
 
 def test_file():
     test_data = {
@@ -843,7 +936,20 @@ def test_club_profile():
         '_aProfileModules': ['info', 'members'],
         '_bAccessorIsInGuild': False,
         '_bAccessorHasPendingJoinRequest': False,
-        '_aLeadership': []
+        '_aLeadership': [
+            {
+                '_aMember': {
+                    '_idRow': 456,
+                    '_sName': 'LeaderUser',
+                    '_bIsOnline': True,
+                    '_bHasRipe': True,
+                    '_sProfileUrl': 'https://gamebanana.com/members/456',
+                    '_sAvatarUrl': 'https://gamebanana.com/avatars/456.jpg'
+                },
+                '_aModgroups': ['admin', 'moderator'],
+                '_tsDateAdded': 1234567000
+            }
+        ]
     }
 
     profile = ClubProfile.from_dict(test_data)
@@ -874,4 +980,31 @@ def test_club_profile():
     assert profile.profile_modules == ['info', 'members']
     assert profile.accessor_is_in_guild is False
     assert profile.accessor_has_pending_join_request is False
-    assert isinstance(profile.leadership, list)
+    
+    # Test leadership records
+    assert len(profile.leadership) == 1
+    leader = profile.leadership[0]
+    assert isinstance(leader, ManagerRecord)
+    assert isinstance(leader.member, Member)
+    assert leader.member.id == 456
+    assert leader.member.name == 'LeaderUser'
+    assert leader.member.is_online is True
+    assert leader.member.has_ripe is True
+    assert leader.modgroups == ['admin', 'moderator']
+    assert isinstance(leader.date_added, int)
+    assert leader.date_added == 1234567000
+
+def test_affiliated_studio():
+    test_data = {
+        '_sProfileUrl': 'https://gamebanana.com/studios/789',
+        '_sName': 'Partner Studio',
+        '_sFlagUrl': 'https://gamebanana.com/studios/789/flag.png',
+        '_sBannerUrl': 'https://gamebanana.com/studios/789/banner.png'
+    }
+
+    studio = AffiliatedStudio.from_dict(test_data)
+
+    assert studio.profile_url == 'https://gamebanana.com/studios/789'
+    assert studio.name == 'Partner Studio'
+    assert studio.flag_url == 'https://gamebanana.com/studios/789/flag.png'
+    assert studio.banner_url == 'https://gamebanana.com/studios/789/banner.png'

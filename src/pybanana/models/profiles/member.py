@@ -11,20 +11,20 @@ from ..common.online import OnlineStatus
 @dataclass
 class MemberProfile:
     base: Profile
-    user_title: str
-    join_date: datetime
-    avatar_url: str
-    points_url: str
-    medals_url: str
-    is_online: bool
-    online_title: str
-    offline_title: str
-    points: int
-    points_rank: int
-    bio_entries: List[Bio]
-    is_banned: bool
+    user_title: str = ""
+    join_date: datetime = field(default_factory=lambda: datetime.fromtimestamp(0))
+    avatar_url: str = ""
+    points_url: str = ""
+    medals_url: str = ""
+    is_online: bool = False
+    online_title: str = ""
+    offline_title: str = ""
+    points: int = 0
+    points_rank: int = 0
+    bio_entries: List[Bio] = field(default_factory=list)
+    is_banned: bool = False
     online_status: Optional[OnlineStatus] = None
-    core_stats:  Optional[CoreStats] = None
+    core_stats: Optional[CoreStats] = None
     honorary_title: Optional[str] = None
     signature_url: Optional[str] = None
     clearance_levels: List[str] = field(default_factory=list)
@@ -41,20 +41,20 @@ class MemberProfile:
         responsibilities = data.get("_aResponsibilities", {})
         return cls(
             base=base,
-            user_title=data["_sUserTitle"],
-            join_date=datetime.fromtimestamp(data["_tsJoinDate"]),
-            avatar_url=data["_sAvatarUrl"],
-            points_url=data["_sPointsUrl"],
-            medals_url=data["_sMedalsUrl"],
-            is_online=data["_bIsOnline"],
-            online_title=data["_sOnlineTitle"],
-            offline_title=data["_sOfflineTitle"],
-            points=data["_nPoints"],
-            points_rank=data["_nPointsRank"],
-            bio_entries=[Bio.from_dict(bio) for bio in data["_aBio"]],
+            user_title=data.get("_sUserTitle", ""),
+            join_date=datetime.fromtimestamp(data.get("_tsJoinDate", 0)),
+            avatar_url=data.get("_sAvatarUrl", ""),
+            points_url=data.get("_sPointsUrl", ""),
+            medals_url=data.get("_sMedalsUrl", ""),
+            is_online=data.get("_bIsOnline", False),
+            online_title=data.get("_sOnlineTitle", ""),
+            offline_title=data.get("_sOfflineTitle", ""),
+            points=data.get("_nPoints", 0),
+            points_rank=data.get("_nPointsRank", 0),
+            bio_entries=[Bio.from_dict(bio) for bio in data.get("_aBio", [])],
             online_status=OnlineStatus.from_dict(data["_aOnlineStatus"]) if "_aOnlineStatus" in data else None,
-            core_stats=CoreStats.from_dict(data["_aCoreStats"]),
-            is_banned=data["_bIsBanned"],
+            core_stats=CoreStats.from_dict(data.get("_aCoreStats", {})),
+            is_banned=data.get("_bIsBanned", False),
             honorary_title=data.get("_sHonoraryTitle"),
             signature_url=data.get("_sSigUrl"),
             clearance_levels=data.get("_aClearanceLevels", []),

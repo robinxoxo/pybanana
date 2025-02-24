@@ -11,36 +11,36 @@ from ..common.stats import CoreStats
 @dataclass
 class AppFeatures:
     """App features."""
-    profile_module_url: Optional[str] = None
-    navigator_tab_url: Optional[str] = None
-    main_url: Optional[str] = None
-    settings_url: Optional[str] = None
+    profile_module_url: str = ""
+    navigator_tab_url: str = ""
+    main_url: str = ""
+    settings_url: str = ""
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "AppFeatures":
         return cls(
-            profile_module_url=data.get("_sProfileModuleUrl"),
-            navigator_tab_url=data.get("_sNavigatorTabUrl"),
-            main_url=data.get("_sMainUrl"),
-            settings_url=data.get("_sSettingsUrl")
+            profile_module_url=data.get("_sProfileModuleUrl", "") or "",
+            navigator_tab_url=data.get("_sNavigatorTabUrl", "") or "",
+            main_url=data.get("_sMainUrl", "") or "",
+            settings_url=data.get("_sSettingsUrl", "") or ""
         )
 
 @dataclass
 class AppProfile:
     """App profile."""
     base: Profile
-    description: str
-    include_variable_name: str
-    version: str
-    state: str
-    type: str
-    user_count: int
-    is_safe: bool
-    accepts_donations: bool
-    accessor_has_app: bool
+    description: str = ""
+    include_variable_name: str = ""
+    version: str = ""
+    state: str = ""
+    type: str = ""
+    user_count: int = 0
+    is_safe: bool = False
+    accepts_donations: bool = False
+    accessor_has_app: bool = False
     features: Optional[AppFeatures] = None
     credits: Optional[Credits] = None
-    sticker_url: Optional[str] = None
+    sticker_url: str = ""
     categories: List[ModCategory] = field(default_factory=list)
     bio: Optional[Bio] = None
     stats: Optional[CoreStats] = None
@@ -51,22 +51,21 @@ class AppProfile:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "AppProfile":
-        base = Profile.from_dict(data)
         return cls(
-            base=base,
-            description=data["_sDescription"],
-            include_variable_name=data["_sIncludeVariableName"],
-            version=data["_sVersion"],
-            state=data["_sState"],
-            type=data["_sType"],
-            user_count=data["_nUserCount"],
-            is_safe=data["_sbIsSafe"] == "true",
-            features=AppFeatures.from_dict(data["_aFeatures"]) if "_aFeatures" in data else None,
-            accepts_donations=data["_bAcceptsDonations"],
-            credits=Credits.from_dict(data["_aCredits"]) if "_aCredits" in data else None,
-            sticker_url=data.get("_sStickerUrl"),
-            accessor_has_app=data["_bAccessorHasApp"],
-            categories=[ModCategory.from_dict(c) for c in data.get("_aCategories", [])],
-            bio=Bio.from_dict(data["_aBio"]) if "_aBio" in data else None,
-            stats=CoreStats.from_dict(data["_aStats"]) if "_aStats" in data else None
+            base=Profile.from_dict(data),
+            description=data.get("_sDescription", "") or "",
+            include_variable_name=data.get("_sIncludeVariableName", "") or "",
+            version=data.get("_sVersion", "") or "",
+            state=data.get("_sState", "") or "",
+            type=data.get("_sType", "") or "",
+            user_count=data.get("_nUserCount", 0) or 0,
+            is_safe=data.get("_sbIsSafe", "") == "true",
+            accepts_donations=data.get("_bAcceptsDonations", False),
+            accessor_has_app=data.get("_bAccessorHasApp", False),
+            features=AppFeatures.from_dict({} if isinstance(data.get("_aFeatures", {}), list) else data.get("_aFeatures", {})),
+            credits=Credits.from_dict({} if isinstance(data.get("_aCredits", {}), list) else data.get("_aCredits", {})),
+            sticker_url=data.get("_sStickerUrl", "") or "",
+            categories=[ModCategory.from_dict(c) for c in data.get("_aCategories", {})],
+            bio=Bio.from_dict({} if isinstance(data.get("_aBio", {}), list) else data.get("_aBio", {})),
+            stats=CoreStats.from_dict({} if isinstance(data.get("_aStats"), list) else data.get("_aStats", {}))
         )

@@ -1,5 +1,5 @@
 """Base profile functionality shared by all profile types."""
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, Any, Optional
 from datetime import datetime
 from .preview import PreviewMedia
@@ -24,6 +24,7 @@ class Profile:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Profile":
+        preview_media_data = data.get("_aPreviewMedia")
         return cls(
             id=data.get("_idRow"),
             status=int(data.get("_nStatus", 0)) if data.get("_nStatus") is not None else None,
@@ -31,7 +32,7 @@ class Profile:
             date_modified=datetime.fromtimestamp(data["_tsDateModified"]) if "_tsDateModified" in data else None,
             date_added=datetime.fromtimestamp(data["_tsDateAdded"]) if "_tsDateAdded" in data else None,
             profile_url=data.get("_sProfileUrl"),
-            preview_media=PreviewMedia.from_dict(data["_aPreviewMedia"]) if "_aPreviewMedia" in data else None,
+            preview_media=PreviewMedia.from_dict(preview_media_data) if preview_media_data else None,
             name=data.get("_sName"),
             initial_visibility=data.get("_sInitialVisibility"),
             has_files=data.get("_bHasFiles"),

@@ -1,19 +1,22 @@
 """Moderator-related shared components."""
-from dataclasses import dataclass
-from typing import Dict, Any, List
+from dataclasses import dataclass, field
+from typing import Dict, Any, List, Optional
 
 from ..member import Member
 
 @dataclass
 class ModeratorRecord:
-    member: Member
-    staff_bio: str
-    modgroups: List[str]
+    member: Member  # Required field
+    modgroups: List[str] = field(default_factory=list)
+    staff_bio: str = ""  # Changed from Optional[str] since it's defaulted to empty string in from_dict
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'ModeratorRecord':
+    def from_dict(cls, data: Dict[str, Any]) -> Optional['ModeratorRecord']:
+        member = Member.from_dict(data.get('_aMember', {}))
+        if member is None:
+            return None
         return cls(
-            member=Member.from_dict(data['_aMember']),
-            staff_bio=data['_sStaffBio'],
-            modgroups=data['_aModgroups']
+            member=member,
+            modgroups=data.get('_aModgroups', []) or [],
+            staff_bio=data.get('_sStaffBio', '') or ""
         )

@@ -1,7 +1,7 @@
 # PyBanana
 A powerful and intuitive Python client library for interacting with the GameBanana API. This library provides easy access to GameBanana's extensive modding platform, allowing you to search, retrieve, and interact with mods, users, games, and more.
 
-> **Note**: This library is currently a Work in Progress (WIP). Features and APIs may change as development continues.
+> **Note**: This library is currently a Work in Progress (WIP). Features and APIs may change.
 
 ## Features
 - 🔍 **Comprehensive API Coverage**
@@ -29,7 +29,6 @@ pip install pybanana
 For detailed documentation and examples, check out:
 - [Getting Started](docs/getting_started.md)
 - [API Reference](docs/api_reference.md)
-- [Examples](docs/examples.md)
 - [Models Reference](docs/models.md)
 
 ## Requirements

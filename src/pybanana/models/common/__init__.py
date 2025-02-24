@@ -5,7 +5,7 @@ from .embeddable import Embeddable
 from .online import OnlineStatus
 from .preview import PreviewMedia, PreviewMediaImage
 from .profile import Profile
-from .ratings import RatingsSummary
+from .ratings import RatingsSummary, RatingBreakdownItem
 from .stats import CoreStats
 from .managers import ManagerRecord
 from .moderators import ModeratorRecord
@@ -34,6 +34,7 @@ __all__ = [
 
     "Profile",
     "RatingsSummary",
+    "RatingBreakdownItem",
     "CoreStats"
 ]
 
