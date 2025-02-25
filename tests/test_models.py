@@ -1,10 +1,11 @@
 import pytest
 from datetime import datetime
+from pybanana.models.member import Member, Moderator
+from pybanana.models.common.buddy import Buddy, SubjectShaper
 from pybanana.models.common.managers import ManagerRecord
 from pybanana.models.common.moderators import ModeratorRecord
 from pybanana.models.common.credits import Credits, Author, CreditGroup, AffiliatedStudio
 from pybanana.models.common.profile import Profile
-from pybanana.models.member import Member, Moderator
 from pybanana.models.profiles.member import MemberProfile
 from pybanana.models.profiles.mod import ModProfile
 from pybanana.models.common.online import OnlineStatus
@@ -15,7 +16,7 @@ from pybanana.models.common.license import LicenseChecklist
 from pybanana.models.profiles.game import GameSection, GameProfile
 from pybanana.models.profiles.app import AppFeatures, AppProfile
 from pybanana.models.profiles.studio import OpenPosition, StudioProfile
-from pybanana.models.profiles.club import ClubProfile  # Added import
+from pybanana.models.profiles.club import ClubProfile
 from pybanana.models.common.responses import ModeratorResponse, GameManagerResponse, ResultResponse
 from pybanana.models.common.ratings import RatingsSummary
 from pybanana.models.profiles.bug import BugProfile
@@ -23,7 +24,7 @@ from pybanana.models.profiles.idea import IdeaProfile
 from pybanana.models.common.embeddable import Embeddable
 from pybanana.models.common.category import ModCategory
 from pybanana.models.common.file import File
-from pybanana.models.result import Result  # Added this import
+from pybanana.models.result import Result
 
 def test_manager_record():
     # Test data using actual API field names
@@ -222,7 +223,7 @@ def test_member_profile():
     assert profile.offline_title == 'Offline'
     assert profile.points == 1000
     assert profile.points_rank == 5
-    assert isinstance(profile.bio_entries, list)
+    assert isinstance(profile.bio, list)
     assert isinstance(profile.online_status, OnlineStatus)
     assert isinstance(profile.core_stats, CoreStats)
     assert profile.is_banned is False
@@ -1008,3 +1009,104 @@ def test_affiliated_studio():
     assert studio.name == 'Partner Studio'
     assert studio.flag_url == 'https://gamebanana.com/studios/789/flag.png'
     assert studio.banner_url == 'https://gamebanana.com/studios/789/banner.png'
+
+def test_subject_shaper():
+    test_data = {
+        "_sBorderStyle": "solid",
+        "_sFont": "Arial",
+        "_sTextColor": "#000000",
+        "_sTextHoverColor": "#555555",
+        "_sBorderColor": "#cccccc",
+        "_sBorderHoverColor": "#999999"
+    }
+
+    shaper = SubjectShaper.from_dict(test_data)
+
+    assert shaper.border_style == "solid"
+    assert shaper.font == "Arial"
+    assert shaper.text_color == "#000000"
+    assert shaper.text_hover_color == "#555555"
+    assert shaper.border_color == "#cccccc"
+    assert shaper.border_hover_color == "#999999"
+
+def test_subject_shaper_empty():
+    test_data = {}
+    
+    shaper = SubjectShaper.from_dict(test_data)
+
+    assert shaper.border_style == ""
+    assert shaper.font == ""
+    assert shaper.text_color == ""
+    assert shaper.text_hover_color == ""
+    assert shaper.border_color == ""
+    assert shaper.border_hover_color == ""
+
+def test_buddy():
+    test_data = {
+        "_aBuddy": {
+            "_idRow": 123,
+            "_sName": "TestBuddy",
+            "_bIsOnline": True,
+            "_bHasRipe": False,
+            "_sProfileUrl": "https://gamebanana.com/members/123",
+            "_sAvatarUrl": "https://gamebanana.com/avatars/123.jpg",
+            "_aClearanceLevels": ["user", "moderator"],
+            "_sHdAvatarUrl": "https://gamebanana.com/avatars/hd/123.jpg",
+            "_sUpicUrl": "https://gamebanana.com/upics/123.jpg",
+            "_aSubjectShaper": {
+                "_sBorderStyle": "solid",
+                "_sFont": "Arial",
+                "_sTextColor": "#000000",
+                "_sTextHoverColor": "#555555",
+                "_sBorderColor": "#cccccc",
+                "_sBorderHoverColor": "#999999"
+            },
+            "_sSubjectShaperCssCode": ".buddy-123 { border: solid 1px #cccccc; }"
+        },
+        "_tsDateAdded": 1234567890
+    }
+
+    buddy = Buddy.from_dict(test_data)
+
+    # Test inherited Member fields
+    assert buddy.id == 123
+    assert buddy.name == "TestBuddy"
+    assert buddy.is_online is True
+    assert buddy.has_ripe is False
+    assert buddy.profile_url == "https://gamebanana.com/members/123"
+    assert buddy.avatar_url == "https://gamebanana.com/avatars/123.jpg"
+
+    # Test Buddy-specific fields
+    assert buddy.clearance_levels == ["user", "moderator"]
+    assert buddy.hd_avatar_url == "https://gamebanana.com/avatars/hd/123.jpg"
+    assert buddy.upic_url == "https://gamebanana.com/upics/123.jpg"
+    assert isinstance(buddy.subject_shaper, SubjectShaper)
+    assert buddy.subject_shaper.border_style == "solid"
+    assert buddy.subject_shaper_css_code == ".buddy-123 { border: solid 1px #cccccc; }"
+    assert isinstance(buddy.date_added, datetime)
+    assert buddy.date_added.timestamp() == 1234567890
+
+def test_buddy_empty():
+    test_data = {
+        "_aBuddy": {
+            "_idRow": 123,
+            "_sName": "TestBuddy",
+            "_bIsOnline": False,
+            "_bHasRipe": False,
+            "_sProfileUrl": "https://gamebanana.com/members/123",
+            "_sAvatarUrl": "https://gamebanana.com/avatars/123.jpg"
+        },
+        "_tsDateAdded": 0
+    }
+
+    buddy = Buddy.from_dict(test_data)
+
+    assert buddy.id == 123
+    assert buddy.name == "TestBuddy"
+    assert buddy.clearance_levels == []
+    assert buddy.hd_avatar_url == ""
+    assert buddy.upic_url == ""
+    assert isinstance(buddy.subject_shaper, SubjectShaper)
+    assert buddy.subject_shaper.border_style == ""
+    assert buddy.subject_shaper_css_code == ""
+    assert buddy.date_added is None

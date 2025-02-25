@@ -1,5 +1,6 @@
 from .bio import Bio, BioEntry
 from .category import ModCategory
+from .field import ProfileField, ContactInfo, PcSpecs, SoftwareKit, GamingDevices
 from .credits import Author, Credits, CreditGroup, AffiliatedStudio
 from .embeddable import Embeddable
 from .online import OnlineStatus
@@ -7,10 +8,12 @@ from .preview import PreviewMedia, PreviewMediaImage
 from .profile import Profile
 from .ratings import RatingsSummary, RatingBreakdownItem
 from .stats import CoreStats
+from .buddy import Buddy, SubjectShaper
 from .managers import ManagerRecord
 from .moderators import ModeratorRecord
 from .file import File
 from .license import LicenseChecklist
+from .medals import Medals
 
 __all__ = [
     "Bio",
@@ -21,10 +24,20 @@ __all__ = [
     "File",
     "LicenseChecklist",
 
+    "Buddy",
+    "SubjectShaper",
+
     "Author",
     "Credits",
     "CreditGroup",
     "AffiliatedStudio",
+
+
+    "ContactInfo",
+    "PcSpecs",
+    "SoftwareKit",
+    "GamingDevices",
+    "Medals",
 
     "Embeddable",
     "OnlineStatus",
@@ -33,6 +46,7 @@ __all__ = [
     "PreviewMediaImage",
 
     "Profile",
+    "ProfileField",
     "RatingsSummary",
     "RatingBreakdownItem",
     "CoreStats"

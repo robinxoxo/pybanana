@@ -12,16 +12,7 @@ class Member:
     avatar_url: str = ""
     
     @classmethod
-    def from_dict(cls, data: Optional[Any]) -> Optional["Member"]:
-        
-        # Return None if input is None or empty list
-        if data is None or (isinstance(data, list) and not data):
-            return None
-            
-        # Convert list to dict if needed
-        if isinstance(data, list):
-            data = {}
-            
+    def from_dict(cls, data: Any) -> "Member":      
         return cls(
             id=data.get("_idRow", 0),
             name=data.get("_sName", ""),

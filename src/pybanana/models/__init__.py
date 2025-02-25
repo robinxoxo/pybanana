@@ -1,6 +1,7 @@
 """GameBanana API models."""
 # Base models
-from .member import Member
+from .member import Member, Moderator, Manager
+from .common.buddy import Buddy, SubjectShaper
 from .common.profile import Profile
 from .common.preview import PreviewMedia, PreviewMediaImage
 from .common.category import ModCategory
@@ -28,7 +29,7 @@ from .profiles.club import ClubProfile
 
 __all__ = [
     # Base models
-    'Member',
+    'Member', 'Moderator', 'Manager',
     'Profile',
     'PreviewMedia', 'PreviewMediaImage',
     'ModCategory',

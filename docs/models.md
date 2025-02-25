@@ -16,18 +16,30 @@ class Member:
     avatar_url: str
 ```
 
+### 👫 Buddy(Member)
+Friend list entry information.
+```python
+class Buddy:
+    id: int
+    member: Member
+    date_added: datetime
+    is_favorite: bool
+    favorite_order: int
+    comments: str
+```
+
 ### 📋 Profile
 Base profile class shared by all profile types.
 ```python
 class Profile:
     id: Optional[int]
+    name: Optional[str]
     status: Optional[int]
     is_private: Optional[bool]
     date_modified: Optional[datetime]
     date_added: Optional[datetime]
     profile_url: Optional[str]
     preview_media: Optional[PreviewMedia]
-    name: Optional[str]
     initial_visibility: Optional[str]
     has_files: Optional[bool]
     subscriber_count: Optional[int]
@@ -44,6 +56,7 @@ class MemberProfile:
     user_title: str
     join_date: datetime
     avatar_url: str
+    upic_url: str
     points_url: str
     medals_url: str
     is_online: bool
@@ -51,7 +64,8 @@ class MemberProfile:
     offline_title: str
     points: int
     points_rank: int
-    bio_entries: List[Bio]
+    staff_profile: str
+    bio: List[Bio]
     is_banned: bool
     online_status: Optional[OnlineStatus]
     core_stats: Optional[CoreStats]
@@ -60,6 +74,12 @@ class MemberProfile:
     clearance_levels: List[str]
     responsibilities: List[str]
     modgroups: List[str]
+    buddies: List[Buddy]
+    contact_info: Optional[List[ProfileField]]
+    pc_specs: Optional[List[ProfileField]]
+    software_kit: Optional[List[ProfileField]]
+    gaming_devices: Optional[List[ProfileField]]
+    medals: List[Medals]
 ```
 
 ### 🎮 ModProfile
@@ -322,6 +342,45 @@ class BioEntry:
     title: str
     value: str
     custom_title: Optional[str]
+```
+
+### 📞 ContactInfo
+Individual contact information entry.
+```python
+class ContactInfo:
+    title: str
+    value: str
+    input_type: Optional[str]
+    icon_classes: Optional[str]
+    value_template: Optional[str]
+    formatted_value: Optional[str]
+```
+
+### ⚡ Field
+Base class for profile data fields.
+```python
+class ProfileField:
+    title: str
+    value: str
+    custom_title: Optional[str]
+    input_type: Optional[str]
+    icon_classes: Optional[str]
+    value_template: Optional[str]
+    formatted_value: Optional[str]
+```
+
+### 🎖️ Medals
+Individual medal information.
+```python
+class Medals:
+    id: int  
+    text: str
+    image_url: str
+    date_added: datetime
+    bronze_count: Optional[int]
+    silver_count: Optional[int]
+    gold_count: Optional[int]
+    platinum_count: Optional[int]
 ```
 
 ### ⭐ Credits
