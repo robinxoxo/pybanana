@@ -1,20 +1,24 @@
 # Standard library imports
-from typing import Dict, Optional, List, Any
+from typing import Any, Dict, List, Optional
 
 # Third party imports
 import requests
 
 # Local imports
-from .models import (AppProfile, BugProfile, ClubProfile, GameProfile, GameManagerResponse, IdeaProfile,
-    Member, MemberProfile, ModeratorResponse, ModProfile, ResultResponse, StudioProfile
-)
-
-#response models
-
-
-from .enums import (
-    ContentType,
-    OrderResult,
+from .enums import ContentType, OrderResult
+from .models import (
+    AppProfile,
+    BugProfile,
+    ClubProfile,
+    GameManagerResponse,
+    GameProfile,
+    IdeaProfile,
+    Member,
+    MemberProfile,
+    ModeratorResponse,
+    ModProfile,
+    ResultResponse,
+    StudioProfile,
 )
 
 class GameBananaAPI:
