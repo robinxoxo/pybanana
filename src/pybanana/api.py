@@ -38,71 +38,110 @@ class GameBananaAPI:
         response.raise_for_status()
         return response.json()
     
-    def get_member(self, user_id: int) -> Member:
+    def get_member(self, user_id: int) -> Optional[Member]:
         """Get information about a specific user by ID."""
-        data = self._get_data(f"/Member/{user_id}")
-        return Member.from_dict(data)
+        try:
+            data = self._get_data(f"/Member/{user_id}")
+            return Member.from_dict(data)
+        except Exception as e:
+            return None
 
-    def get_member_profile(self, user_id: int) -> MemberProfile:
+    def get_member_profile(self, user_id: int) -> Optional[MemberProfile]:
         """Get detailed profile information about a specific user."""
-        data = self._get_data(f"/Member/{user_id}/ProfilePage")
-        return MemberProfile.from_dict(data)
+        try:
+            data = self._get_data(f"/Member/{user_id}/ProfilePage")
+            return MemberProfile.from_dict(data)
+        except Exception as e:
+            return None
 
-    def get_game_profile(self, game_id: int) -> GameProfile:
+    def get_game_profile(self, game_id: int) -> Optional[GameProfile]:
         """Get information about a specific game by ID."""
-        data = self._get_data(f"/Game/{game_id}/ProfilePage")
-        return GameProfile.from_dict(data)
+        try:
+            data = self._get_data(f"/Game/{game_id}/ProfilePage")
+            return GameProfile.from_dict(data)
+        except Exception as e:
+            return None
 
-    def get_app_profile(self, app_id: int) -> AppProfile:
+    def get_app_profile(self, app_id: int) -> Optional[AppProfile]:
         """Get information about a specific app by ID."""
-        data = self._get_data(f"/App/{app_id}/ProfilePage")
-        return AppProfile.from_dict(data)
+        try:
+            data = self._get_data(f"/App/{app_id}/ProfilePage")
+            return AppProfile.from_dict(data)
+        except Exception as e:
+            return None
 
-    def get_bug_profile(self, bug_id: int) -> BugProfile:
+    def get_bug_profile(self, bug_id: int) -> Optional[BugProfile]:
         """Get information about a specific bug report by ID."""
-        data = self._get_data(f"/Bug/{bug_id}/ProfilePage")
-        return BugProfile.from_dict(data)
+        try:
+            data = self._get_data(f"/Bug/{bug_id}/ProfilePage")
+            return BugProfile.from_dict(data)
+        except Exception as e:
+            return None
 
-    def get_idea_profile(self, idea_id: int) -> IdeaProfile:
+    def get_idea_profile(self, idea_id: int) -> Optional[IdeaProfile]:
         """Get information about a specific idea by ID."""
-        data = self._get_data(f"/Idea/{idea_id}/ProfilePage")
-        return IdeaProfile.from_dict(data)
+        try:
+            data = self._get_data(f"/Idea/{idea_id}/ProfilePage")
+            return IdeaProfile.from_dict(data)
+        except Exception as e:
+            return None
     
-    def get_mod_profile(self, submission_id: int) -> ModProfile:
+    def get_mod_profile(self, submission_id: int) -> Optional[ModProfile]:
         """Get detailed information about a specific submission."""
-        data = self._get_data(f"/Mod/{submission_id}/ProfilePage")
-        return ModProfile.from_dict(data)
+        try:
+            data = self._get_data(f"/Mod/{submission_id}/ProfilePage")
+            return ModProfile.from_dict(data)
+        except Exception as e:
+            return None
     
-    def get_studio_profile(self, studio_id: int) -> StudioProfile:
+    def get_studio_profile(self, studio_id: int) -> Optional[StudioProfile]:
         """Get information about a specific studio by ID."""
-        data = self._get_data(f"/Studio/{studio_id}/ProfilePage")
-        return StudioProfile.from_dict(data)
+        try:
+            data = self._get_data(f"/Studio/{studio_id}/ProfilePage")
+            return StudioProfile.from_dict(data)
+        except Exception as e:
+            return None
     
-    def get_club_profile(self, club_id: int) -> ClubProfile:
+    def get_club_profile(self, club_id: int) -> Optional[ClubProfile]:
         """Get information about a specific club by ID."""
-        data = self._get_data(f"/Club/{club_id}/ProfilePage")
-        return ClubProfile.from_dict(data)
+        try:
+            data = self._get_data(f"/Club/{club_id}/ProfilePage")
+            return ClubProfile.from_dict(data)
+        except Exception as e:
+            return None
 
-    def get_moderators(self) -> ModeratorResponse:
+    def get_moderators(self) -> Optional[ModeratorResponse]:
         """Get a list of moderators."""
-        data = self._get_data("/Member/Moderators")
-        return ModeratorResponse.from_dict(data)
+        try:
+            data = self._get_data("/Member/Moderators")
+            return ModeratorResponse.from_dict(data)
+        except Exception as e:
+            return None
 
-    def get_managers(self, page: int = 1, per_page = 15) -> GameManagerResponse:
+    def get_managers(self, page: int = 1, per_page = 15) -> Optional[GameManagerResponse]:
         """Get a list of game managers with pagination."""
-        params = { "_nPage": page, "_nPerpage": per_page } # only 15 seems tow work.
-        data = self._get_data("/Member/GameManagers", params)
-        return GameManagerResponse.from_dict(data)
+        try:
+            params = { "_nPage": page, "_nPerpage": per_page } # only 15 seems tow work.
+            data = self._get_data("/Member/GameManagers", params)
+            return GameManagerResponse.from_dict(data)
+        except Exception as e:
+            return None
 
-    def get_download_url(self, model_name: ContentType, item_id: int, file_id: int) -> str:
+    def get_download_url(self, model_name: ContentType, item_id: int, file_id: int) -> Optional[str]:
         """Get the download URL for a specific file."""
-        data = self._get_data(f"/{model_name}/{item_id}/ProfilePage")
-        return data.get("_sDownloadUrl", "")
+        try:
+            data = self._get_data(f"/{model_name}/{item_id}/ProfilePage")
+            return data.get("_sDownloadUrl", "")
+        except Exception as e:
+            return None
 
-    def get_categories(self, model_name: ContentType) -> List[Dict[str, Any]]:
+    def get_categories(self, model_name: ContentType) -> Optional[List[Dict[str, Any]]]:
         """Get available categories for a specific model type."""
-        data = self._get_data(f"/{model_name}/Categories")
-        return data.get("_aRecords", [])
+        try:
+            data = self._get_data(f"/{model_name}/Categories")
+            return data.get("_aRecords", [])
+        except Exception as e:
+            return None
      
     def search(
         self,
@@ -112,17 +151,20 @@ class GameBananaAPI:
         page: int = 1,
         per_page: int = 15,
         fields: Optional[str] = None,
-    ) -> ResultResponse:
+    ) -> Optional[ResultResponse]:
         """Search for content across GameBanana."""
-        params = {
-            "_sSearchString": query,
-            "_sModelName": model.value,
-            "_sOrder": order.value,
-            "_nPage": page,
-            "_nPerpage": per_page,
-            "_csvFields": "name,description,article,attribs,studio,owner,credits" or fields
-        }
-        
-        data = self._get_data("/Util/Search/Results", params)
-        return ResultResponse.from_dict(data)
+        try:
+            params = {
+                "_sSearchString": query,
+                "_sModelName": model.value,
+                "_sOrder": order.value,
+                "_nPage": page,
+                "_nPerpage": per_page,
+                "_csvFields": "name,description,article,attribs,studio,owner,credits" or fields
+            }
+            
+            data = self._get_data("/Util/Search/Results", params)
+            return ResultResponse.from_dict(data)
+        except Exception as e:
+            return None
 
