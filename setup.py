@@ -1,4 +1,9 @@
 from setuptools import setup, find_packages
+import os
+
+# Read the content of README.md for the long description
+with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), "README.md"), encoding="utf-8") as f:
+    long_description = f.read()
 
 setup(
     name="pybanana",
@@ -18,8 +23,8 @@ setup(
     author="robin",
     author_email="xrobinsong@gmail.com",
     description="A Python wrapper for the GameBanana API",
-    long_description="A powerful and intuitive Python client library for interacting with the GameBanana API",
-    long_description_content_type="text/plain",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/robinbtw/pybanana",
     classifiers=[
         "Programming Language :: Python :: 3",
