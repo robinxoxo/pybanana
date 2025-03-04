@@ -478,8 +478,16 @@ class AppFeatures:
 Container for search results.
 ```python
 class ResultResponse:
+    metadata: Dict[str, Any]
     records: List[Result]
-    record_count: int
+```
+
+### 🟢 OnlineResponse
+Container for online presence results.
+```python
+class OnlineResponse:
+    metadata: Dict[str, Any]
+    records: List[OnlineRecord]
 ```
 
 ### 👮 ModeratorResponse
@@ -493,7 +501,17 @@ class ModeratorResponse:
 Response from game managers endpoint.
 ```python
 class GameManagerResponse:
+    metadata: Dict[str, Any]
     records: List[ManagerRecord]
+```
+
+### 🌐 OnlineRecord
+Individual online presence record.
+```python
+class OnlineRecord:
+    member: Member
+    status: OnlineStatus
+    title: Optional[str]
 ```
 
 ### 👥 ModeratorRecord
@@ -516,10 +534,10 @@ class ManagerRecord:
 
 ## 🔄 Enums
 
-### 📁 ContentType
-Available content types.
+### 📁 ModelType
+Available model types for GameBanana API requests.
 ```python
-class ContentType(str, Enum):
+class ModelType(str, Enum):
     APP = "App"
     ARTICLE = "Article" 
     BUG = "Bug"

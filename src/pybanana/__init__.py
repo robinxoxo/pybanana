@@ -3,12 +3,12 @@ PyBanana - A Python wrapper for the GameBanana API.
 """
 
 # Package metadata
-__version__ = "0.4.2"
+__version__ = "0.4.3"
 __author__ = "robin"
 __license__ = "MIT"
 
 # Main API class
-from .api import GameBananaAPI
+from .api import PyBanana
 
 # Import all models from the models package
 from .models import (
@@ -47,13 +47,14 @@ from .models import (
     ModeratorResponse,
     GameManagerResponse,
     ResultResponse,
+    OnlineResponse
 )
 
 from .models.result import Result
 
 # Define what should be imported with "from pybanana import *"
 __all__ = [
-    "GameBananaAPI",
+    "PyBanana",
     # Base models
     "Member", "Moderator", "Manager",
     "Buddy", "SubjectShaper",
@@ -89,6 +90,7 @@ __all__ = [
     "ModeratorResponse",
     "GameManagerResponse",
     "ResultResponse",
+    "OnlineResponse",
     
     # Additional models
     "Result",

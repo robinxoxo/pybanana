@@ -3,7 +3,7 @@ from .category import ModCategory
 from .field import ProfileField, ContactInfo, PcSpecs, SoftwareKit, GamingDevices
 from .credits import Author, Credits, CreditGroup, AffiliatedStudio
 from .embeddable import Embeddable
-from .online import OnlineStatus
+from .online import OnlineStatus, OnlineRecord
 from .preview import PreviewMedia, PreviewMediaImage
 from .profile import Profile
 from .ratings import RatingsSummary, RatingBreakdownItem
@@ -21,6 +21,7 @@ __all__ = [
     "ModCategory",
     "ManagerRecord",
     "ModeratorRecord",
+    "OnlineRecord",
     "File",
     "LicenseChecklist",
 

@@ -7,7 +7,7 @@ class OrderResult(str, Enum):
     NEWEST = "date"
     UPDATED = "udate"
 
-class ContentType(str, Enum):
+class ModelType(str, Enum):
     """Enum for model names used in the GameBanana API."""
     APP = "App"
     ARTICLE = "Article"

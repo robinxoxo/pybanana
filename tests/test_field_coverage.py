@@ -1,6 +1,7 @@
 import pytest
 from typing import get_type_hints
-from pybanana.api import GameBananaAPI
+from pybanana.api import PyBanana
+from pybanana.enums import ModelType
 from pybanana.models.profiles.mod import ModProfile
 from pybanana.models.profiles.game import GameProfile
 from pybanana.models.profiles.member import MemberProfile 
@@ -40,7 +41,7 @@ def check_field_coverage(api_data: dict | list, model_class, model_name: str):
 
 def test_mod_field_coverage():
     """Test that ModProfile covers all fields returned by the API"""
-    api = GameBananaAPI()
+    api = PyBanana()
     mod_id = 572595  # known valid mod ID
     raw_data = api._get_data(f"/Mod/{mod_id}/ProfilePage")
     _ = ModProfile.from_dict(raw_data)  # Verify we can create the model
@@ -48,7 +49,7 @@ def test_mod_field_coverage():
 
 def test_game_field_coverage():
     """Test that GameProfile covers all fields returned by the API"""
-    api = GameBananaAPI()
+    api = PyBanana()
     game_id = 297  # Team Fortress 2
     raw_data = api._get_data(f"/Game/{game_id}/ProfilePage")
     _ = GameProfile.from_dict(raw_data)  # Verify we can create the model
@@ -56,7 +57,7 @@ def test_game_field_coverage():
 
 def test_member_field_coverage():
     """Test that MemberProfile covers all fields returned by the API"""
-    api = GameBananaAPI()
+    api = PyBanana()
     member_id = 1382  # Tom
     raw_data = api._get_data(f"/Member/{member_id}/ProfilePage")
     _ = MemberProfile.from_dict(raw_data)  # Verify we can create the model
@@ -64,7 +65,7 @@ def test_member_field_coverage():
 
 def test_studio_field_coverage():
     """Test that StudioProfile covers all fields returned by the API"""
-    api = GameBananaAPI()
+    api = PyBanana()
     studio_id = 38059
     raw_data = api._get_data(f"/Studio/{studio_id}/ProfilePage")
     _ = StudioProfile.from_dict(raw_data)  # Verify we can create the model
@@ -72,7 +73,7 @@ def test_studio_field_coverage():
 
 def test_club_field_coverage():
     """Test that ClubProfile covers all fields returned by the API"""
-    api = GameBananaAPI()
+    api = PyBanana()
     club_id = 28
     raw_data = api._get_data(f"/Club/{club_id}/ProfilePage")
     _ = ClubProfile.from_dict(raw_data)  # Verify we can create the model
@@ -80,7 +81,7 @@ def test_club_field_coverage():
 
 def test_app_field_coverage():
     """Test that AppProfile covers all fields returned by the API"""
-    api = GameBananaAPI()
+    api = PyBanana()
     app_id = 794
     raw_data = api._get_data(f"/App/{app_id}/ProfilePage")
     _ = AppProfile.from_dict(raw_data)  # Verify we can create the model
@@ -88,7 +89,7 @@ def test_app_field_coverage():
 
 def test_bug_field_coverage():
     """Test that BugProfile covers all fields returned by the API"""
-    api = GameBananaAPI()
+    api = PyBanana()
     bug_id = 4886
     raw_data = api._get_data(f"/Bug/{bug_id}/ProfilePage")
     _ = BugProfile.from_dict(raw_data)  # Verify we can create the model
@@ -96,7 +97,7 @@ def test_bug_field_coverage():
 
 def test_idea_field_coverage():
     """Test that IdeaProfile covers all fields returned by the API"""
-    api = GameBananaAPI()
+    api = PyBanana()
     idea_id = 7079
     raw_data = api._get_data(f"/Idea/{idea_id}/ProfilePage")
     _ = IdeaProfile.from_dict(raw_data)  # Verify we can create the model
@@ -104,7 +105,7 @@ def test_idea_field_coverage():
 
 def test_result_field_coverage():
     """Test that Result covers all fields returned by the API"""
-    api = GameBananaAPI()
+    api = PyBanana()
     mod_id = 572595  # Use same valid mod ID
     raw_data = api._get_data(f"/Mod/{mod_id}/DownloadPage")
     _ = Result.from_dict(raw_data)  # Verify we can create the model
@@ -112,14 +113,14 @@ def test_result_field_coverage():
 
 def test_moderator_response_field_coverage():
     """Test that ModeratorResponse covers all fields returned by the API"""
-    api = GameBananaAPI()
+    api = PyBanana()
     raw_data = api._get_data(f"/Member/Moderators")  # Changed to ModeratorList endpoint
     _ = ModeratorResponse.from_dict(raw_data)  # Verify we can create the model
     return check_field_coverage(raw_data, ModeratorResponse, "ModeratorResponse")
 
 def test_game_manager_response_field_coverage():
     """Test that GameManagerResponse covers all fields returned by the API"""
-    api = GameBananaAPI()
+    api = PyBanana()
     game_id = 297  # Team Fortress 2
     raw_data = api._get_data(f"/Game/{game_id}/Managers")
     _ = GameManagerResponse.from_dict(raw_data)  # Verify we can create the model
@@ -127,7 +128,7 @@ def test_game_manager_response_field_coverage():
 
 def test_result_response_field_coverage():
     """Test that ResultResponse covers all fields returned by the API"""
-    api = GameBananaAPI()
+    api = PyBanana()
     raw_data = api._get_data("/Util/Search/Results", params={"_sSearchString": "test"})  # Search endpoint
     _ = ResultResponse.from_dict(raw_data)  # Verify we can create the model
     return check_field_coverage(raw_data, ResultResponse, "ResultResponse")

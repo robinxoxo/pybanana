@@ -1,8 +1,8 @@
-from pybanana.api import GameBananaAPI
+from pybanana.api import PyBanana
 
 def main():
-    # Initialize the API client
-    api = GameBananaAPI()
+    user_id = 1382  # Example user ID (Tom)
+    api = PyBanana()
     
     # Get basic member information
     id = 1382 # Example member ID

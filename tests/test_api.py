@@ -1,10 +1,10 @@
 import pytest
-from pybanana.api import GameBananaAPI
-from pybanana.enums import ContentType, OrderResult
+from pybanana.api import PyBanana
+from pybanana.enums import ModelType, OrderResult
 
 @pytest.fixture
 def api():
-    return GameBananaAPI()
+    return PyBanana()
 
 def test_get_member(api):
     member = api.get_member(1382)  # Using Tom's ID
@@ -20,7 +20,7 @@ def test_get_member_profile(api):
     assert hasattr(profile, "show_ripe_promo")
 
 def test_search(api):
-    response = api.search(query="sound", model=ContentType.MOD, order=OrderResult.RELEVANCE)
+    response = api.search(query="sound", model=ModelType.MOD, order=OrderResult.RELEVANCE)
     assert response is not None
     assert hasattr(response, "records")
 

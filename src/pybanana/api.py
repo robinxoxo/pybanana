@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional
 import requests
 
 # Local imports
-from .enums import ContentType, OrderResult
+from .enums import ModelType, OrderResult
 from .models import (
     AppProfile,
     BugProfile,
@@ -19,14 +19,15 @@ from .models import (
     ModProfile,
     ResultResponse,
     StudioProfile,
+    OnlineResponse
 )
 
-class GameBananaAPI:
+class PyBanana:
     """GameBanana API client."""
     
     def __init__(self):
         self.base_url = "https://gamebanana.com/apiv11"
-        self.headers = {"Accept": "application/json", "User-Agent": "Python/GameBananaAPI"}
+        self.headers = {"Accept": "application/json", "User-Agent": "Python/PyBanana"}
 
     def _get_data(self, endpoint: str, params: Optional[Dict[str, Any]] = None) -> Any:
         """Make a GET request to the GameBanana API."""
@@ -121,13 +122,55 @@ class GameBananaAPI:
     def get_managers(self, page: int = 1, per_page = 15) -> Optional[GameManagerResponse]:
         """Get a list of game managers with pagination."""
         try:
-            params = { "_nPage": page, "_nPerpage": per_page } # only 15 seems tow work.
+            params = { "_nPage": page, "_nPerpage": per_page } # only 15 seems to work.
             data = self._get_data("/Member/GameManagers", params)
             return GameManagerResponse.from_dict(data)
         except Exception as e:
             return None
+        
+    def get_online_moderators(self) -> Optional[List[ModeratorResponse]]:
+        """Get a list of currently online moderators."""
+        try:
+            moderator_response = self.get_moderators()
+            if moderator_response is None or moderator_response.records is None:
+                return None
+            
+            # Filter only the online moderators
+            online_moderators = [
+                mod for mod in moderator_response.records 
+                if mod.member is not None and mod.member.is_online
+            ]
+            
+            return online_moderators
+        except Exception as e:
+            return None
+        
+    def get_online_managers(self) -> Optional[List[GameManagerResponse]]:
+        """Get a list of currently online managers."""
+        try:
+            manager_response = self.get_managers()
+            if manager_response is None or manager_response.records is None:
+                return None
+            
+            online_managers = [
+                manager for manager in manager_response.records 
+                if manager.member is not None and manager.member.is_online
+            ]
 
-    def get_download_url(self, model_name: ContentType, item_id: int, file_id: int) -> Optional[str]:
+            return online_managers
+        except Exception as e:
+            return None
+
+    def get_online_members(self, page: int = 1, per_page = 15) -> Optional[OnlineResponse]:
+        """Get a list of currently online members."""
+        try:
+            params = { "_nPage": page, "_nPerpage": per_page } 
+            data = self._get_data("/Member/Online", params=params)
+            return OnlineResponse.from_dict(data)
+        except Exception as e:
+            return None
+
+    def get_download_url(self, model_name: ModelType, item_id: int, file_id: int) -> Optional[str]:
         """Get the download URL for a specific file."""
         try:
             data = self._get_data(f"/{model_name}/{item_id}/ProfilePage")
@@ -135,7 +178,7 @@ class GameBananaAPI:
         except Exception as e:
             return None
 
-    def get_categories(self, model_name: ContentType) -> Optional[List[Dict[str, Any]]]:
+    def get_categories(self, model_name: ModelType) -> Optional[List[Dict[str, Any]]]:
         """Get available categories for a specific model type."""
         try:
             data = self._get_data(f"/{model_name}/Categories")
@@ -146,7 +189,7 @@ class GameBananaAPI:
     def search(
         self,
         query: str,
-        model: ContentType,
+        model: ModelType,
         order: OrderResult = OrderResult.RELEVANCE,
         page: int = 1,
         per_page: int = 15,

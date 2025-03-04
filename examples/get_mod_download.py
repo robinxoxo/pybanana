@@ -1,12 +1,12 @@
-from pybanana.api import GameBananaAPI
-from pybanana.enums import ContentType
+from pybanana.api import PyBanana
+from pybanana.enums import ModelType
 import json
 
 def main():
-    api = GameBananaAPI()
+    mod_id = 572595  # Example mod ID
+    file_id = 123456  # Example file ID
     
-    # Get information about a mod and its download
-    mod_id = 572595
+    api = PyBanana()
     
     try:
         # Get the mod profile first

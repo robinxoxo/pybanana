@@ -4,6 +4,7 @@ from typing import Dict, Any, List, Optional
 from ..result import Result
 from .moderators import ModeratorRecord
 from .managers import ManagerRecord
+from .online import OnlineRecord
 
 @dataclass
 class ModeratorResponse:
@@ -18,7 +19,7 @@ class ModeratorResponse:
 @dataclass
 class GameManagerResponse:
     """Response from the game managers endpoint."""
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: Dict[str, Any] = None
     records: List[ManagerRecord] = field(default_factory=list)
 
     @classmethod
@@ -30,20 +31,35 @@ class GameManagerResponse:
         
         records = [rec for rec in (ManagerRecord.from_dict(record) for record in data.get('_aRecords', [])) if rec is not None]
         return cls(
-            metadata=data.get('_aMetadata'),
+            metadata=data.get("_aMetadata", {}) or {},
             records=records
         )
 
 @dataclass
 class ResultResponse:
     """Container for search results that matches the GameBanana API response structure."""
+    metadata: Dict[str, Any] = None
     records: List[Result] = field(default_factory=list)
-    record_count: int = 0
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'ResultResponse':
         """Create a ResultList instance from a dictionary."""
         return cls(
+            metadata=data.get("_aMetadata", {}) or {},
             records=[Result.from_dict(record) for record in data["_aRecords"]],
-            record_count=data.get('_nRecordCount', 0)
+        )
+    
+@dataclass
+class OnlineResponse:
+    """Container for online status that matches the GameBanana API response structure."""
+    metadata: Dict[str, Any] = None
+    records: List[OnlineRecord] = field(default_factory=list)
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'OnlineResponse':
+        """Create an OnlineResponse instance from a dictionary."""
+        records = [rec for rec in (OnlineRecord.from_dict(record) for record in data.get('_aRecords', [])) if rec is not None]
+        return cls(
+            metadata=data.get("_aMetadata", {}) or {},
+            records=records
         )

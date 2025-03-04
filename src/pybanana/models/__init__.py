@@ -22,7 +22,8 @@ from .common.moderators import ModeratorRecord
 from .common.responses import (
     ModeratorResponse,
     GameManagerResponse,
-    ResultResponse
+    ResultResponse,
+    OnlineResponse
 )
 
 # Profile models
@@ -61,6 +62,7 @@ __all__ = [
     'ModeratorResponse',
     'GameManagerResponse',
     'ResultResponse',
+    'OnlineResponse',
     
     # Profile models
     'GameProfile', 'GameSection',

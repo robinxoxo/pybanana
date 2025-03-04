@@ -23,65 +23,73 @@ pip install pybanana
 Here's a simple example to get you started:
 
 ```python
-from pybanana.api import GameBananaAPI
-from pybanana.enums import ContentType, OrderResult
+from pybanana.api import PyBanana
+from pybanana.enums import ModelType, OrderResult
 
 # Initialize the API client
-api = GameBananaAPI()
+api = PyBanana()
 
 # Search for content
 results = api.search(
     query="texture pack",
-    model=ContentType.MOD,
+    model=ModelType.MOD,
     order=OrderResult.RELEVANCE,
     page=1,
     per_page=15
 )
 
-# Print search results
-for result in results.records:
-    print(f"Found: {result.name}")
+# Check if search was successful and print results
+if results:
+    for result in results.records:
+        print(f"Found: {result.name}")
+else:
+    print("Search failed or returned no results")
 
 # Get game information
 game = api.get_game_profile(297)  # Team Fortress 2
-print(f"Game: {game.name}")
-print(f"Description: {game.description}")
+if game:
+    print(f"Game: {game.name}")
+    print(f"Description: {game.description}")
 
 # Get mod details
 mod = api.get_mod_profile(572595)  # Example mod ID
-print(f"Mod: {mod.name}")
-print(f"Author: {mod.submitter.name}")
-print(f"Downloads: {mod.stats.downloads}")
+if mod:
+    print(f"Mod: {mod.name}")
+    print(f"Author: {mod.submitter.name}")
+    print(f"Downloads: {mod.stats.downloads}")
 
 # Get user information
 member = api.get_member_profile(1382)  # Example user ID
-print(f"Username: {member.name}")
-print(f"Member Since: {member.join_date}")
+if member:
+    print(f"Username: {member.name}")
+    print(f"Member Since: {member.join_date}")
 ```
 
 ## ⚠️ Error Handling
 
-The API client will raise exceptions when encountering errors. It's recommended to handle these appropriately:
+All API methods now return `None` when they fail, so you should always check if the returned value exists:
 
 ```python
-try:
-    mod = api.get_mod_profile(999999999)  # Non-existent ID
-except Exception as e:
-    print(f"Error: {str(e)}")
+# Try to get a mod with a non-existent ID
+mod = api.get_mod_profile(999999999)
+if mod:
+    print(f"Found mod: {mod.name}")
+else:
+    print("Mod not found or an error occurred")
 ```
 
-## 📦 Content Types
+## 📦 Model Types
 
-The library supports various content types through the `ContentType` enum:
+The library supports various model types through the `ModelType` enum:
 
-- 🎮 `ContentType.MOD` - Game modifications
-- 🕹️ `ContentType.GAME` - Games
-- 👤 `ContentType.MEMBER` - User profiles
-- 🏢 `ContentType.STUDIO` - Game development studios
-- 👥 `ContentType.CLUB` - Community clubs
-- 💻 `ContentType.APP` - Applications
-- 🐛 `ContentType.BUG` - Bug reports
-- 💡 `ContentType.IDEA` - Game ideas and concepts
+- 🎮 `ModelType.MOD` - Game modifications
+- 🕹️ `ModelType.GAME` - Games
+- 👤 `ModelType.MEMBER` - User profiles
+- 🏢 `ModelType.STUDIO` - Game development studios
+- 👥 `ModelType.CLUB` - Community clubs
+- 💻 `ModelType.APP` - Applications
+- 🐛 `ModelType.BUG` - Bug reports
+- 💡 `ModelType.IDEA` - Game ideas and concepts
 
 ## 📄 Pagination
 
@@ -89,10 +97,11 @@ Many methods support pagination to handle large result sets:
 
 ```python
 # Get first page of search results
-page1 = api.search(query="map", model=ContentType.MOD, page=1, per_page=15)
+page1 = api.search(query="map", model=ModelType.MOD, page=1, per_page=15)
 
-# Get next page
-page2 = api.search(query="map", model=ContentType.MOD, page=2, per_page=15)
+# If first page was successful, get next page
+if page1:
+    page2 = api.search(query="map", model=ModelType.MOD, page=2, per_page=15)
 ```
 
 ## 📚 Next Steps

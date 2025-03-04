@@ -1,4 +1,4 @@
-# PyBanana
+# 🍌 PyBanana
 A powerful and intuitive Python client library for interacting with the GameBanana API. This library provides easy access to GameBanana's extensive modding platform, allowing you to search, retrieve, and interact with mods, users, games, and more.
 
 > **Note**: This library is currently a Work in Progress (WIP). Features and APIs may change.
@@ -11,14 +11,36 @@ A powerful and intuitive Python client library for interacting with the GameBana
   - Get game information and categories
   - Browse mod sections and categories
 - 🛠 **Developer-Friendly**
-  - Full type hints support
+  - Full type hints support with Optional return types
   - Intuitive object-oriented models
-  - Comprehensive error handling
+  - Robust error handling with graceful failure (returns None)
   - Well-documented API methods
 - 🚀 **Easy to Use**
   - Simple and clean API
   - Pythonic interface
   - Extensive examples provided
+
+## Quick Start
+
+```python
+from pybanana.api import PyBanana
+from pybanana.enums import ModelType
+
+# Initialize the client
+api = PyBanana()
+
+# Get a member's profile
+member = api.get_member(1382)  # Tom's ID
+if member:
+    print(f"Name: {member.name}")
+    print(f"Online: {member.is_online}")
+
+# Search for mods
+results = api.search("sound effects", ModelType.MOD)
+if results:
+    for mod in results.records:
+        print(f"Mod: {mod.name} - {mod.description}")
+```
 
 ## Installation
 ```bash
@@ -32,9 +54,27 @@ For detailed documentation and examples, check out:
 - [Models Reference](docs/models.md)
 
 ## Requirements
+
+### Runtime Dependencies
 - Python 3.7+
 - `requests` >= 2.25.0
 - `python-dateutil` >= 2.8.2
+
+### Development Dependencies
+- `pytest` >= 8.0.0
+- `requests-mock` >= 1.11.0
+
+## Error Handling
+All public API methods now return `Optional` types and include built-in error handling. When an API call fails, methods return `None` instead of raising exceptions, allowing for more resilient code:
+
+```python
+# Safe API usage with None check
+mod = api.get_mod_profile(12345)
+if mod:
+    print(f"Found mod: {mod.name}")
+else:
+    print("Mod not found or API error occurred")
+```
 
 ## Contributing
 Contributions are welcome! Here's how you can help:
