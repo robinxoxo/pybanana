@@ -19,11 +19,13 @@ from .common.medals import Medals
 from .common.online import OnlineStatus
 from .common.managers import ManagerRecord
 from .common.moderators import ModeratorRecord
+from .common.discussion import DiscussionRecord, Post, Submission
 from .common.responses import (
     ModeratorResponse,
     GameManagerResponse,
     ResultResponse,
-    OnlineResponse
+    OnlineResponse,
+    DiscussionResponse
 )
 
 # Profile models
@@ -57,12 +59,14 @@ __all__ = [
     'OnlineStatus',
     'ManagerRecord',
     'ModeratorRecord',
+    'DiscussionRecord', 'Post', 'Submission',
     
     # Response models
     'ModeratorResponse',
     'GameManagerResponse',
     'ResultResponse',
     'OnlineResponse',
+    'DiscussionResponse',
     
     # Profile models
     'GameProfile', 'GameSection',

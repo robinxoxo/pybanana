@@ -11,6 +11,7 @@ from .stats import CoreStats
 from .buddy import Buddy, SubjectShaper
 from .managers import ManagerRecord
 from .moderators import ModeratorRecord
+from .discussion import DiscussionRecord, Post, Submission
 from .file import File
 from .license import LicenseChecklist
 from .medals import Medals
@@ -22,6 +23,9 @@ __all__ = [
     "ManagerRecord",
     "ModeratorRecord",
     "OnlineRecord",
+    "DiscussionRecord",
+    "Post",
+    "Submission",
     "File",
     "LicenseChecklist",
 
@@ -32,7 +36,6 @@ __all__ = [
     "Credits",
     "CreditGroup",
     "AffiliatedStudio",
-
 
     "ContactInfo",
     "PcSpecs",

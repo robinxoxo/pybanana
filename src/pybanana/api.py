@@ -19,7 +19,8 @@ from .models import (
     ModProfile,
     ResultResponse,
     StudioProfile,
-    OnlineResponse
+    OnlineResponse,
+    DiscussionResponse,
 )
 
 class PyBanana:
@@ -39,6 +40,14 @@ class PyBanana:
         response.raise_for_status()
         return response.json()
     
+    def _get_auth_cookies(self, username: str, password: str):
+        """Authenticate with GameBanana and get session cookie."""   
+        url = "https://gamebanana.com/apiv11/Member/Authenticate"
+        json_data = { "_sUsername": username, "_sPassword": password }
+        response = requests.post(url, json=json_data, headers=self.headers)
+        response.raise_for_status()
+        return response.cookies
+          
     def get_member(self, user_id: int) -> Optional[Member]:
         """Get information about a specific user by ID."""
         try:
@@ -127,41 +136,8 @@ class PyBanana:
             return GameManagerResponse.from_dict(data)
         except Exception as e:
             return None
-        
-    def get_online_moderators(self) -> Optional[List[ModeratorResponse]]:
-        """Get a list of currently online moderators."""
-        try:
-            moderator_response = self.get_moderators()
-            if moderator_response is None or moderator_response.records is None:
-                return None
-            
-            # Filter only the online moderators
-            online_moderators = [
-                mod for mod in moderator_response.records 
-                if mod.member is not None and mod.member.is_online
-            ]
-            
-            return online_moderators
-        except Exception as e:
-            return None
-        
-    def get_online_managers(self) -> Optional[List[GameManagerResponse]]:
-        """Get a list of currently online managers."""
-        try:
-            manager_response = self.get_managers()
-            if manager_response is None or manager_response.records is None:
-                return None
-            
-            online_managers = [
-                manager for manager in manager_response.records 
-                if manager.member is not None and manager.member.is_online
-            ]
 
-            return online_managers
-        except Exception as e:
-            return None
-
-    def get_online_members(self, page: int = 1, per_page = 15) -> Optional[OnlineResponse]:
+    def get_online_members(self, page: int = 1, per_page: int = 15) -> Optional[OnlineResponse]:
         """Get a list of currently online members."""
         try:
             params = { "_nPage": page, "_nPerpage": per_page } 
@@ -169,20 +145,21 @@ class PyBanana:
             return OnlineResponse.from_dict(data)
         except Exception as e:
             return None
+        
+    def get_discussions(self, page: int = 1, per_page: int = 15) -> Optional[DiscussionResponse]:
+        """Get a list of recent discussions."""
+        try:
+            params = { "_nPage": page, "_nPerpage": per_page }
+            data = self._get_data("/Util/Generic/Discussions", params)
+            return DiscussionResponse.from_dict(data)
+        except Exception as e:
+            return None
 
-    def get_download_url(self, model_name: ModelType, item_id: int, file_id: int) -> Optional[str]:
+    def get_download_url(self, model_name: ModelType, item_id: int) -> Optional[str]:
         """Get the download URL for a specific file."""
         try:
             data = self._get_data(f"/{model_name}/{item_id}/ProfilePage")
             return data.get("_sDownloadUrl", "")
-        except Exception as e:
-            return None
-
-    def get_categories(self, model_name: ModelType) -> Optional[List[Dict[str, Any]]]:
-        """Get available categories for a specific model type."""
-        try:
-            data = self._get_data(f"/{model_name}/Categories")
-            return data.get("_aRecords", [])
         except Exception as e:
             return None
      

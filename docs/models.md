@@ -16,7 +16,7 @@ class Member:
     avatar_url: str
 ```
 
-### 👫 Buddy(Member)
+### 👫 Buddy
 Friend list entry information.
 ```python
 class Buddy:
@@ -46,6 +46,28 @@ class Profile:
     show_ripe_promo: Optional[bool]
     accessor_subscription_row: Optional[int]
     accessor_is_subscribed: Optional[bool]
+```
+
+### 📄 Submission
+Submission information in a discussion record.
+```python
+class Submission:
+    base: Profile
+    model_name: Optional[str] = None
+    singular_title: Optional[str] = None
+    icon_classes: Optional[str] = None
+    date_updated: Optional[int] = None
+    submitter: Optional[Member] = None
+    game: Optional[GameSection] = None
+    root_category: Optional[ModCategory] = None
+    version: Optional[str] = None
+    is_obsolete: bool = False
+    has_content_ratings: bool = False
+    like_count: int = 0
+    post_count: int = 0
+    was_featured: bool = False
+    view_count: int = 0
+    is_owned_by_accessor: bool = False
 ```
 
 ### 👥 MemberProfile
@@ -277,6 +299,16 @@ class IdeaProfile:
 
 ## 🧩 Common Components
 
+### 📝 Post
+Individual post/comment information.
+```python
+class Post:
+    id: Optional[int] = None
+    date_added: Optional[int] = None
+    text: Optional[str] = None
+    poster: Optional[Member] = None
+```
+
 ### 🖼️ PreviewMedia
 Media preview information.
 ```python
@@ -505,6 +537,14 @@ class GameManagerResponse:
     records: List[ManagerRecord]
 ```
 
+### 💬 DiscussionResponse
+Container for discussion results.
+```python
+class DiscussionResponse:
+    metadata: Dict[str, Any]
+    records: List[DiscussionRecord]
+```
+
 ### 🌐 OnlineRecord
 Individual online presence record.
 ```python
@@ -530,6 +570,14 @@ class ManagerRecord:
     member: Member
     modgroups: List[str]
     date_added: Optional[int]
+```
+
+### 💭 DiscussionRecord
+Individual discussion record.
+```python
+class DiscussionRecord:
+    submission: Optional[Submission] = None
+    post: Optional[Post] = None
 ```
 
 ## 🔄 Enums

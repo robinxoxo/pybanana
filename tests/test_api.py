@@ -42,3 +42,11 @@ def test_get_game_profile(api):
 def test_api_error(api):
     with pytest.raises(Exception):
         api.get_member(999999999)
+
+def test_get_auth_cookie(api):
+    # Test with invalid credentials
+    invalid_cookie = api._get_auth_cookie("invalid_user", "invalid_pass")
+    assert invalid_cookie is None
+
+    # Note: We can't test valid credentials here as that would require real GameBanana credentials
+    # In a real test environment, you would mock the requests.post call

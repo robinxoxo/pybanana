@@ -3,7 +3,7 @@ PyBanana - A Python wrapper for the GameBanana API.
 """
 
 # Package metadata
-__version__ = "0.4.3"
+__version__ = "0.4.4"
 __author__ = "robin"
 __license__ = "MIT"
 
@@ -32,6 +32,7 @@ from .models import (
     OnlineStatus,
     ManagerRecord, 
     ModeratorRecord,
+    DiscussionRecord,
     
     # Profile models
     MemberProfile,
@@ -47,7 +48,8 @@ from .models import (
     ModeratorResponse,
     GameManagerResponse,
     ResultResponse,
-    OnlineResponse
+    OnlineResponse,
+    DiscussionResponse
 )
 
 from .models.result import Result
@@ -75,6 +77,7 @@ __all__ = [
     "OnlineStatus",
     "ManagerRecord", 
     "ModeratorRecord",
+    "DiscussionRecord",
     
     # Profile models
     "MemberProfile",
@@ -91,6 +94,7 @@ __all__ = [
     "GameManagerResponse",
     "ResultResponse",
     "OnlineResponse",
+    "DiscussionResponse",
     
     # Additional models
     "Result",

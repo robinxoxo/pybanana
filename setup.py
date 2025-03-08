@@ -7,7 +7,7 @@ with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), "README.md"),
 
 setup(
     name="pybanana",
-    version="0.4.3",
+    version="0.4.4",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     install_requires=[
@@ -25,7 +25,7 @@ setup(
     description="A Python wrapper for the GameBanana API",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/robinbtw/pybanana",
+    url="https://github.com/robinxoxo/pybanana",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

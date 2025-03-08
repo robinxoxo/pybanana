@@ -5,6 +5,7 @@ from ..result import Result
 from .moderators import ModeratorRecord
 from .managers import ManagerRecord
 from .online import OnlineRecord
+from .discussion import DiscussionRecord
 
 @dataclass
 class ModeratorResponse:
@@ -59,6 +60,21 @@ class OnlineResponse:
     def from_dict(cls, data: Dict[str, Any]) -> 'OnlineResponse':
         """Create an OnlineResponse instance from a dictionary."""
         records = [rec for rec in (OnlineRecord.from_dict(record) for record in data.get('_aRecords', [])) if rec is not None]
+        return cls(
+            metadata=data.get("_aMetadata", {}) or {},
+            records=records
+        )
+    
+@dataclass
+class DiscussionResponse:
+    """Container for discussion records that matches the GameBanana API response structure."""
+    metadata: Dict[str, Any] = None
+    records: List[DiscussionRecord] = field(default_factory=list)
+
+    @classmethod
+    def from_dict(cls, data: Dict[str, Any]) -> 'DiscussionResponse':
+        """Create a DiscussionResponse instance from a dictionary."""
+        records = [rec for rec in (DiscussionRecord.from_dict(record) for record in data.get('_aRecords', [])) if rec is not None]
         return cls(
             metadata=data.get("_aMetadata", {}) or {},
             records=records

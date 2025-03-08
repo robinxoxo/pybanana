@@ -88,27 +88,6 @@ get_managers(
 ```
 Returns a paginated list of game managers. Returns `None` if the operation fails.
 
-#### 👥 Get Online Members
-```python
-get_online_members(
-    page: int = 1,
-    per_page: int = 15
-) -> Optional[List[Member]]
-```
-Returns a paginated list of currently online members. Returns `None` if the operation fails.
-
-#### 👮 Get Online Moderators
-```python
-get_online_moderators() -> Optional[List[ModeratorResponse]]
-```
-Returns a list of currently online moderators. Returns `None` if the operation fails.
-
-#### 👑 Get Online Managers
-```python
-get_online_managers() -> Optional[List[GameManagerResponse]]
-```
-Returns a list of currently online game managers. Returns `None` if the operation fails.
-
 ### 🛠️ Utility Methods
 
 #### 📥 Get Download URL
@@ -121,15 +100,6 @@ get_download_url(
 ```
 
 Generate a download URL for a specific file. Returns `None` if the operation fails.
-
-#### 📑 Get Categories
-```python
-get_categories(
-    model_name: ModelType
-) -> Optional[List[Dict[str, Any]]]
-```
-
-Retrieve available categories for a content type. Returns `None` if the operation fails.
 
 ## 📦 Response Objects
 
@@ -165,6 +135,42 @@ if mods:
         print(f"Moderator: {mod}")
 else:
     print("Failed to retrieve moderators")
+```
+
+### 💬 DiscussionResponse
+Container for discussion thread information.
+
+**Attributes:**
+- `metadata`: Dict[str, Any] - Additional metadata about the discussion
+- `records`: List[DiscussionRecord] - List of DiscussionRecord objects containing thread information
+
+**Usage:**
+```python
+discussions = api.get_discussions()
+if discussions:
+    print(f"Metadata: {discussions.metadata}")
+    for record in discussions.records:
+        print(f"Post Id: {record.post.id}")
+else:
+    print("Failed to retrieve discussions")
+```
+
+### 👥 OnlineResponse
+Container for currently online users information.
+
+**Attributes:**
+- `records`: List[OnlineRecord] - List of OnlineRecord objects containing online user data
+- `total_count`: int - Total number of users currently online
+
+**Usage:**
+```python
+online = api.get_online_users()
+if online:
+    print(f"Total online: {online.total_count}")
+    for user in online.records:
+        print(f"User: {user}")
+else:
+    print("Failed to retrieve online users")
 ```
 
 ### 👑 GameManagerResponse
