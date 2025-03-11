@@ -7,7 +7,7 @@ with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), "README.md"),
 
 setup(
     name="pybanana",
-    version="0.4.4",
+    version="0.4.5",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     install_requires=[
