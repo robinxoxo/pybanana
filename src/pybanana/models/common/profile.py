@@ -24,15 +24,28 @@ class Profile:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Profile":
-        preview_media_data = data.get("_aPreviewMedia")
+        preview_media_data = data.get("_aPreviewMedia", {})
+        if not isinstance(preview_media_data, dict):
+            preview_media_data = {}
+
+        try:
+            date_modified = datetime.fromtimestamp(data["_tsDateModified"]) if "_tsDateModified" in data else None
+        except (ValueError, OSError):
+            date_modified = None
+
+        try:
+            date_added = datetime.fromtimestamp(data["_tsDateAdded"]) if "_tsDateAdded" in data else None
+        except (ValueError, OSError):
+            date_added = None
+
         return cls(
             id=data.get("_idRow"),
             status=int(data.get("_nStatus", 0)) if data.get("_nStatus") is not None else None,
             is_private=data.get("_bIsPrivate"),
-            date_modified=datetime.fromtimestamp(data["_tsDateModified"]) if "_tsDateModified" in data else None,
-            date_added=datetime.fromtimestamp(data["_tsDateAdded"]) if "_tsDateAdded" in data else None,
+            date_modified=date_modified,
+            date_added=date_added,
             profile_url=data.get("_sProfileUrl"),
-            preview_media=PreviewMedia.from_dict(preview_media_data) if preview_media_data else None,
+            preview_media=PreviewMedia.from_dict(preview_media_data),
             name=data.get("_sName"),
             initial_visibility=data.get("_sInitialVisibility"),
             has_files=data.get("_bHasFiles"),

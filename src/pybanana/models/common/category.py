@@ -12,6 +12,9 @@ class ModCategory:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "ModCategory":
+        if not isinstance(data, dict):
+            return cls()
+
         return cls(
             id=data.get("_idRow", 0) or 0,
             name=data.get("_sName", "") or "",

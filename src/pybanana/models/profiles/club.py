@@ -53,7 +53,7 @@ class ClubProfile:
             is_private=data.get("_bIsPrivate", False),
             date_modified=datetime.fromtimestamp(data.get("_tsDateModified", 0)),
             date_added=datetime.fromtimestamp(data.get("_tsDateAdded", 0)),
-            preview_media=PreviewMedia.from_dict(data.get("_aPreviewMedia", []) or []),
+            preview_media=PreviewMedia.from_dict({} if isinstance(data.get("_aPreviewMedia", {}), list) else data.get("_aPreviewMedia", {})),
             accessor_is_submitter=data.get("_bAccessorIsSubmitter", False),
             is_trashed=data.get("_bIsTrashed", False),
             name=data.get("_sName", "") or "",

@@ -27,13 +27,18 @@ class File:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "File":
-        timestamp = data.get("_tsDateAdded", 0) or 0
+        try:
+            timestamp = data.get("_tsDateAdded", 0)
+            date_added = datetime.fromtimestamp(timestamp) if timestamp else None
+        except (ValueError, OSError):
+            date_added = None
+
         return cls(
             id=data.get("_idRow", 0) or 0,
             filename=data.get("_sFile", "") or "",
             filesize=data.get("_nFilesize", 0) or 0,
             description=data.get("_sDescription", "") or "",
-            date_added=datetime.fromtimestamp(timestamp),
+            date_added=date_added,
             download_count=data.get("_nDownloadCount", 0) or 0,
             analysis_state=data.get("_sAnalysisState", "") or "",
             analysis_result_code=data.get("_sAnalysisResultCode", "") or "",

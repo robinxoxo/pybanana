@@ -10,13 +10,14 @@ class BioEntry:
 
     @classmethod
     def from_dict(cls, data: Dict[str, str]) -> "BioEntry":
-        if isinstance(data, dict):
-            return cls(
-                title=data.get('_sTitle', "") or "",
-                value=data.get('_sValue', "") or "",
-                custom_title=data.get("_sCustomTitle") or ""
-            )
-        return cls()
+        if not isinstance(data, dict):
+            return cls()
+            
+        return cls(
+            title=data.get("_sTitle", "") or "",
+            value=data.get("_sValue", "") or "",
+            custom_title=data.get("_sCustomTitle", "") or ""
+        )
 
 @dataclass
 class Bio:
@@ -24,8 +25,11 @@ class Bio:
 
     @classmethod
     def from_dict(cls, data: Union[Dict[str, Any], List[Dict[str, Any]]]) -> "Bio":
+        if not isinstance(data, (dict, list)):
+            return cls()
+            
         if isinstance(data, list):
-            return cls(entries=[])
+            return cls()
             
         # Handle direct bio entry format
         if all(key in data for key in ["_sTitle", "_sValue"]):
@@ -33,5 +37,8 @@ class Bio:
             
         # Handle wrapped bio entries format
         bio_entries = data.get("_aBio", []) or []
+        if not isinstance(bio_entries, list):
+            bio_entries = []
+            
         entries = [BioEntry.from_dict(entry) for entry in bio_entries]
         return cls(entries=entries)

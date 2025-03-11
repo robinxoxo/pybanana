@@ -1,5 +1,5 @@
 """Result models for GameBanana."""
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List, Optional, Dict, Any
 from .common.preview import PreviewMedia
 from .member import Member
@@ -22,7 +22,7 @@ class Result:
     initial_visibility: Optional[str] = None
     has_content_ratings: bool = False
     is_owned_by_accessor: bool = False
-    files: List[File] = None
+    files: List[File] = field(default_factory=list)
     accepts_donations: bool = False
     is_trashed: bool = False
     is_withheld: bool = False

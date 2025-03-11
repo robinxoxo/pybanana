@@ -51,7 +51,7 @@ class ModProfile:
     is_animated: str = ""
     accepts_donations: bool = False
     show_ripe_promo: bool = False
-    embeddables: Optional[Embeddable] = None
+    embeddables: List[Embeddable] = field(default_factory=list)
     submitter: Optional[Member] = None
     category: Optional[ModCategory] = None
     credits: Optional[Credits] = None
@@ -106,7 +106,7 @@ class ModProfile:
             is_animated=data.get("_xIsAnimated", ""),
             accepts_donations=data.get("_bAcceptsDonations", False),
             show_ripe_promo=data.get("_bShowRipePromo", False),
-            embeddables=Embeddable.from_dict(data["_aEmbeddables"]) if "_aEmbeddables" in data else None,
+            embeddables=[Embeddable.from_dict(item) for item in data.get("_aEmbeddables", [])],
             submitter=Member.from_dict(data["_aSubmitter"]) if "_aSubmitter" in data else None,
             category=ModCategory.from_dict(data["_aCategory"]) if "_aCategory" in data else None,
             credits=Credits.from_dict(data["_aCredits"]) if "_aCredits" in data else None,
@@ -118,5 +118,3 @@ class ModProfile:
             accessor_has_unliked=data.get("_bAccessorHasUnliked", False),
             accessor_has_liked=data.get("_bAccessorHasLiked", False)
         )
-
-

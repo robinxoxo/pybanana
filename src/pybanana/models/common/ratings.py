@@ -5,19 +5,20 @@ from typing import Dict, Any, Optional
 @dataclass
 class RatingBreakdownItem:
     count: int = 0
-    title: str = ""
-    verb: str = ""
-    icon_url: str = ""
-    icon_classes: str = ""
-
+    negativity: int = 0
+    positivity: int = 0
+    weight: int = 0
+    
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "RatingBreakdownItem":
+        if not isinstance(data, dict):
+            return cls()
+            
         return cls(
             count=data.get("_nCount", 0) or 0,
-            title=data.get("_sTitle", "") or "",
-            verb=data.get("_sVerb", "") or "",
-            icon_url=data.get("_sIconUrl", "") or "",
-            icon_classes=data.get("_sIconClasses", "") or ""
+            negativity=data.get("_nNegativity", 0) or 0,
+            positivity=data.get("_nPositivity", 0) or 0,
+            weight=data.get("_nWeight", 0) or 0
         )
 
 @dataclass
@@ -35,20 +36,18 @@ class RatingsSummary:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "RatingsSummary":
         if not isinstance(data, dict):
-            data = {}
+            return cls()
             
-        # Extract the ratings summary data from the nested structure
-        ratings_data = data.get("_aRatingsSummary", {}) or {}
-        breakdown_data = ratings_data.get("_aRatingsBreakdown", {}) or {}
-        breakdown = {
-            k: RatingBreakdownItem.from_dict(v) 
-            for k, v in breakdown_data.items()
-        }
-        
+        breakdown = {}
+        breakdown_data = data.get("_aRatingsBreakdown", {}) or {}
+        if isinstance(breakdown_data, dict):
+            for rating_key, rating_data in breakdown_data.items():
+                breakdown[rating_key] = RatingBreakdownItem.from_dict(rating_data)
+                
         return cls(
-            ratings_count=ratings_data.get("_nRatingsCount", 0) or 0,
-            cumulative_rating=ratings_data.get("_iCumulativeRating", 0) or 0,
-            cumulative_positivity=ratings_data.get("_iCumulativePositivity", 0) or 0,
-            cumulative_negativity=ratings_data.get("_iCumulativeNegativity", 0) or 0,
+            ratings_count=data.get("_nRatingsCount", 0) or 0,
+            cumulative_rating=data.get("_nCumulativeRating", 0) or 0,
+            cumulative_positivity=data.get("_nCumulativePositivity", 0) or 0,
+            cumulative_negativity=data.get("_nCumulativeNegativity", 0) or 0,
             ratings_breakdown=breakdown
         )

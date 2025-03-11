@@ -12,14 +12,17 @@ class Member:
     avatar_url: str = ""
     
     @classmethod
-    def from_dict(cls, data: Any) -> "Member":      
+    def from_dict(cls, data: Any) -> Optional["Member"]:
+        if not isinstance(data, dict):
+            return None
+            
         return cls(
-            id=data.get("_idRow", 0),
-            name=data.get("_sName", ""),
-            is_online=data.get("_bIsOnline", False),
-            has_ripe=data.get("_bHasRipe", False),
-            profile_url=data.get("_sProfileUrl", ""),
-            avatar_url=data.get("_sAvatarUrl", "")
+            id=data.get("_idRow", 0) or 0,
+            name=data.get("_sName", "") or "",
+            is_online=bool(data.get("_bIsOnline", False)),
+            has_ripe=bool(data.get("_bHasRipe", False)),
+            profile_url=data.get("_sProfileUrl", "") or "",
+            avatar_url=data.get("_sAvatarUrl", "") or ""
         )
 
 @dataclass

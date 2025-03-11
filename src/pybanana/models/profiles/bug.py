@@ -72,7 +72,7 @@ class BugProfile:
             source_url=data.get("_sSourceUrl", "") or "",
             show_ripe_promo=data.get("_bShowRipePromo", False) or False,
             embeddables=[Embeddable.from_dict(embed) for embed in data.get("_aEmbeddables", [])],
-            submitter=Member.from_dict(data.get("_aMember", [])) if data.get("_aMember", []) else None,
+            submitter=Member.from_dict(data.get("_aMember", {})) if data.get("_aMember") else None,
             attachments=[File.from_dict(file) for file in data.get("_aAttachments", [])],
             accessor_subscription_row_id=data.get("_idAccessorSubscriptionRow", 0) or 0,
             accessor_is_subscribed=data.get("_bAccessorIsSubscribed", False) or False,

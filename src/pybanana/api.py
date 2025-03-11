@@ -128,11 +128,11 @@ class PyBanana:
         except Exception as e:
             return None
 
-    def get_managers(self, page: int = 1, per_page = 15) -> Optional[GameManagerResponse]:
+    def get_managers(self, page: int = 1, per_page: int = 15) -> Optional[GameManagerResponse]:
         """Get a list of game managers with pagination."""
         try:
-            params = { "_nPage": page, "_nPerpage": per_page } # only 15 seems to work.
-            data = self._get_data("/Member/GameManagers", params)
+            params = { "_nPage": page, "_nPerpage": per_page }
+            data = self._get_data("/Member/GameManagers", params=params)
             return GameManagerResponse.from_dict(data)
         except Exception as e:
             return None
@@ -150,7 +150,7 @@ class PyBanana:
         """Get a list of recent discussions."""
         try:
             params = { "_nPage": page, "_nPerpage": per_page }
-            data = self._get_data("/Util/Generic/Discussions", params)
+            data = self._get_data("/Util/Generic/Discussions", params=params)
             return DiscussionResponse.from_dict(data)
         except Exception as e:
             return None
@@ -180,11 +180,10 @@ class PyBanana:
                 "_sOrder": order.value,
                 "_nPage": page,
                 "_nPerpage": per_page,
-                "_csvFields": "name,description,article,attribs,studio,owner,credits" or fields
+                "_csvFields": fields if fields is not None else "name,description,article,attribs,studio,owner,credits"
             }
             
-            data = self._get_data("/Util/Search/Results", params)
+            data = self._get_data("/Util/Search/Results", params=params)
             return ResultResponse.from_dict(data)
         except Exception as e:
             return None
-
