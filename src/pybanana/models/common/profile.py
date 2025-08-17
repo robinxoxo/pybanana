@@ -22,35 +22,31 @@ class Profile:
     accessor_subscription_row: Optional[int] = None
     accessor_is_subscribed: Optional[bool] = None
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Profile":
+    def __init__(self, data: Dict[str, Any]):
         preview_media_data = data.get("_aPreviewMedia", {})
         if not isinstance(preview_media_data, dict):
             preview_media_data = {}
-
-        try:
-            date_modified = datetime.fromtimestamp(data["_tsDateModified"]) if "_tsDateModified" in data else None
-        except (ValueError, OSError):
-            date_modified = None
-
-        try:
-            date_added = datetime.fromtimestamp(data["_tsDateAdded"]) if "_tsDateAdded" in data else None
-        except (ValueError, OSError):
-            date_added = None
-
-        return cls(
-            id=data.get("_idRow"),
-            status=int(data.get("_nStatus", 0)) if data.get("_nStatus") is not None else None,
-            is_private=data.get("_bIsPrivate"),
-            date_modified=date_modified,
-            date_added=date_added,
-            profile_url=data.get("_sProfileUrl"),
-            preview_media=PreviewMedia.from_dict(preview_media_data),
-            name=data.get("_sName"),
-            initial_visibility=data.get("_sInitialVisibility"),
-            has_files=data.get("_bHasFiles"),
-            subscriber_count=data.get("_nSubscriberCount"),
-            show_ripe_promo=data.get("_bShowRipePromo"),
-            accessor_subscription_row=data.get("_idAccessorSubscriptionRow"),
-            accessor_is_subscribed=data.get("_bAccessorIsSubscribed")
+        self.id = data.get("_idRow")
+        self.status = (
+            int(data.get("_nStatus", 0)) if data.get("_nStatus") is not None else None
         )
+        self.is_private = data.get("_bIsPrivate")
+        self.date_modified = (
+            datetime.fromtimestamp(data["_tsDateModified"])
+            if "_tsDateModified" in data
+            else None
+        )
+        self.date_added = (
+            datetime.fromtimestamp(data["_tsDateAdded"])
+            if "_tsDateAdded" in data
+            else None
+        )
+        self.profile_url = data.get("_sProfileUrl")
+        self.preview_media = PreviewMedia(preview_media_data)
+        self.name = data.get("_sName")
+        self.initial_visibility = data.get("_sInitialVisibility")
+        self.has_files = data.get("_bHasFiles")
+        self.subscriber_count = data.get("_nSubscriberCount")
+        self.show_ripe_promo = data.get("_bShowRipePromo")
+        self.accessor_subscription_row = data.get("_idAccessorSubscriptionRow")
+        self.accessor_is_subscribed = data.get("_bAccessorIsSubscribed")

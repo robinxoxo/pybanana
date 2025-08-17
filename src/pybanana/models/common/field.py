@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Any, List, Optional
 
 @dataclass
 class ProfileField:
@@ -11,18 +11,16 @@ class ProfileField:
     value_template: Optional[str] = None
     formatted_value: Optional[str] = None
 
-    @classmethod
-    def from_dict(cls, data: dict) -> "ProfileField":
+    def __init__(self, data: dict[str, list]):
         """Create a ProfileField instance from a dictionary."""
-        return cls(
-            title=data["_sTitle"],
-            value=data["_sValue"],
-            input_type=data.get("_sInputType", ""),
-            icon_classes=data.get("_sIconClasses", ""),
-            value_template=data.get("_sValueTemplate", ""),
-            formatted_value=data.get("_sFormattedValue", "")
-        )
-    
+        self.title = data["_sTitle"]
+        self.value = data["_sValue"]
+        self.input_type = data.get("_sInputType", "")
+        self.icon_classes = data.get("_sIconClasses", "")
+        self.value_template = data.get("_sValueTemplate", "")
+        self.formatted_value = data.get("_sFormattedValue", "")
+
+
 @dataclass
 class ContactInfo(ProfileField):
     """A GameBanana contact information entry."""

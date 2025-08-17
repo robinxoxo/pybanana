@@ -9,17 +9,15 @@ class AffiliatedStudio:
     flag_url: str = ""
     banner_url: str = ""
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "AffiliatedStudio":
+    def __init__(self, data: Dict[str, Any]):
         if not isinstance(data, dict):
-            return cls()
-            
-        return cls(
-            profile_url=data.get("_sProfileUrl", "") or "",
-            name=data.get("_sName", "") or "",
-            flag_url=data.get("_sFlagUrl", "") or "",
-            banner_url=data.get("_sBannerUrl", "") or ""
-        )
+            return
+
+        self.profile_url = data.get("_sProfileUrl", "")
+        self.name = data.get("_sName", "")
+        self.flag_url = data.get("_sFlagUrl", "")
+        self.banner_url = data.get("_sBannerUrl", "")
+
 
 @dataclass
 class Author:
@@ -31,58 +29,51 @@ class Author:
     is_online: bool = False
     affiliated_studio: Optional[AffiliatedStudio] = None
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Author":
+    def __init__(self, data: Dict[str, Any]):
         if not isinstance(data, dict):
-            return cls()
-            
+            return
+
         affiliated_studio = None
         studio_data = data.get("_aAffiliatedStudio")
         if isinstance(studio_data, dict):
-            affiliated_studio = AffiliatedStudio.from_dict(studio_data)
+            affiliated_studio = AffiliatedStudio(studio_data)
 
-        return cls(
-            role=data.get("_sRole", "") or "",
-            name=data.get("_sName", "") or "",
-            id=data.get("_idRow") or 0,
-            upic_url=data.get("_sUpicUrl", "") or "",
-            profile_url=data.get("_sProfileUrl", "") or "",
-            is_online=bool(data.get("_bIsOnline", False)),
-            affiliated_studio=affiliated_studio
-        )
+        self.name = data.get("_sName", "")
+        self.id = data.get("_idRow", 0)
+        self.profile_url = data.get("_sProfileUrl", "")
+        self.is_online = bool(data.get("_bIsOnline", False))
+        self.affiliated_studio = affiliated_studio
+
 
 @dataclass
 class CreditGroup:
     group_name: str = ""
     authors: List[Author] = field(default_factory=list)
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "CreditGroup":
+    def __init__(self, data: Dict[str, Any]):
         if not isinstance(data, dict):
-            return cls()
+            return
 
         authors = []
-        author_data = data.get("_aAuthors", []) or []
+        author_data = data.get("_aAuthors", [])
         if isinstance(author_data, list):
-            authors = [Author.from_dict(author) for author in author_data]
+            authors = [Author(author) for author in author_data]
 
-        return cls(
-            group_name=data.get("_sGroupName", "") or "",
-            authors=authors
-        )
+        self.group_name = data.get("_sGroupName", "")
+        self.authors = authors
+
 
 @dataclass
 class Credits:
     groups: List[CreditGroup] = field(default_factory=list)
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Credits":
+    def __init__(self, data: Dict[str, Any]):
         if not isinstance(data, dict):
-            return cls()
+            return
 
         groups = []
-        groups_data = data.get("_aGroups", []) or []
+        groups_data = data.get("_aCredits", [])
         if isinstance(groups_data, list):
-            groups = [CreditGroup.from_dict(group) for group in groups_data]
+            groups = [CreditGroup(group) for group in groups_data]
 
-        return cls(groups=groups)
+        self.groups = groups

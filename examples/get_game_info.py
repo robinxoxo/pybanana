@@ -2,26 +2,26 @@ from pybanana.api import PyBanana
 
 def main():
     api = PyBanana()
-    
+
     id = 9  # Half-Life 2
     # Example game ID for Half-Life 2
     try:
-        game = api.get_game_profile(id)
-        
+        game = api.get_game(id)
+
         if game:
             print(f"Game: {game.name}")
             print(f"Description: {game.description}")
             print(f"Game URL: {game.profile_url}")
             print(f"Release Date: {game.release_date}")
             print(f"Welcome Message: {game.welcome_message}")
-            
+
             # Print sections information
             if game.sections:
                 print("\nGame Sections:")
                 for section in game.sections:
                     print(f"- {section.plural_title} ({section.item_count} items)")
                     print(f"  URL: {section.url}")
-            
+
             # Get available categories for mods in this game
             if game.mod_categories:
                 print("\nMod Categories:")

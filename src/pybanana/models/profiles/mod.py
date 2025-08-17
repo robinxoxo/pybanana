@@ -1,25 +1,25 @@
 """Mod profile and related functionality."""
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional
-from datetime import datetime
 
 from ..member import Member
 from ..common.profile import Profile
-from ..common.preview import PreviewMedia
 from ..common.credits import Credits
 from ..common.category import ModCategory
 from ..common.embeddable import Embeddable
 from ..common.file import File
 from ..common.license import LicenseChecklist
-from .studio import StudioProfile
+from .studio import Studio
+from .game import Game
+
 
 @dataclass
-class ModProfile:
+class Mod(Profile):
     """Mod profile information."""
-    base: Profile  # Required field - no default
+    game: Game | None = None
     feedback_instructions: str = ""
     accessor_is_submitter: bool = False
-    is_trashed: bool = False  
+    is_trashed: bool = False
     is_withheld: bool = False
     name: str = ""
     updates_count: int = 0
@@ -37,7 +37,7 @@ class ModProfile:
     download_count: int = 0
     files: List[File] = field(default_factory=list)
     subscriber_count: int = 0
-    studio: Optional[StudioProfile] = None
+    studio: Optional[Studio] = None
     contributing_studios: List[Any] = field(default_factory=list)
     license: str = ""
     license_checklist: Optional[LicenseChecklist] = None
@@ -65,56 +65,61 @@ class ModProfile:
 
     def __getattr__(self, name):
         """Delegate attribute access to base Profile."""
-        return getattr(self.base, name)
+        return getattr(self, name)
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ModProfile":
-        base = Profile.from_dict(data)
-        return cls(
-            base=base,
-            feedback_instructions=data.get("_sFeedbackInstructions", ""),
-            accessor_is_submitter=data.get("_bAccessorIsSubmitter", False),
-            is_trashed=data.get("_bIsTrashed", False),
-            is_withheld=data.get("_bIsWithheld", False),
-            name=data.get("_sName", ""),
-            updates_count=data.get("_nUpdatesCount", 0),
-            has_updates=data.get("_bHasUpdates", False),
-            all_todos_count=data.get("_nAllTodosCount", 0),
-            has_todos=data.get("_bHasTodos", False),
-            post_count=data.get("_nPostCount", 0),
-            attributes=data.get("_aAttributes", {}),
-            tags=data.get("_aTags", []),
-            created_by_submitter=data.get("_bCreatedBySubmitter", False),
-            is_ported=data.get("_bIsPorted", False),
-            thanks_count=data.get("_nThanksCount", 0),
-            initial_visibility=data.get("_sInitialVisibility", ""),
-            download_url=data.get("_sDownloadUrl", ""),
-            download_count=data.get("_nDownloadCount", 0),
-            files=[File.from_dict(f) for f in data.get("_aFiles", [])],
-            subscriber_count=data.get("_nSubscriberCount", 0),
-            studio=StudioProfile.from_dict(data["_aStudio"]) if "_aStudio" in data else None,
-            contributing_studios=data.get("_aContributingStudios", []),
-            license=data.get("_sLicense", ""),
-            license_checklist=LicenseChecklist.from_dict(data["_aLicenseChecklist"]) if "_aLicenseChecklist" in data else None,
-            description=data.get("_sDescription", ""),
-            generate_table_of_contents=data.get("_bGenerateTableOfContents", False),
-            text=data.get("_sText", ""),
-            like_count=data.get("_nLikeCount", 0),
-            view_count=data.get("_nViewCount", 0),
-            is_mapped=data.get("_bIsMapped", False),
-            is_textured=data.get("_bIsTextured", False),
-            is_animated=data.get("_xIsAnimated", ""),
-            accepts_donations=data.get("_bAcceptsDonations", False),
-            show_ripe_promo=data.get("_bShowRipePromo", False),
-            embeddables=[Embeddable.from_dict(item) for item in data.get("_aEmbeddables", [])],
-            submitter=Member.from_dict(data["_aSubmitter"]) if "_aSubmitter" in data else None,
-            category=ModCategory.from_dict(data["_aCategory"]) if "_aCategory" in data else None,
-            credits=Credits.from_dict(data["_aCredits"]) if "_aCredits" in data else None,
-            advanced_requirements_exist=data.get("_bAdvancedRequirementsExist", False),
-            requirements=data.get("_aRequirements", []),
-            accessor_subscription_row_id=data.get("_idAccessorSubscriptionRow", 0),
-            accessor_is_subscribed=data.get("_bAccessorIsSubscribed", False),
-            accessor_has_thanked=data.get("_bAccessorHasThanked", False),
-            accessor_has_unliked=data.get("_bAccessorHasUnliked", False),
-            accessor_has_liked=data.get("_bAccessorHasLiked", False)
+    def __init__(self, data: Dict[str, Any]):
+        super().__init__(data)
+        self.game = Game(data["_aGame"]) if "_aGame" in data else None
+        self.feedback_instructions = data.get("_sFeedbackInstructions", "")
+        self.accessor_is_submitter = data.get("_bAccessorIsSubmitter", False)
+        self.is_trashed = data.get("_bIsTrashed", False)
+        self.is_withheld = data.get("_bIsWithheld", False)
+        self.name = data.get("_sName", "")
+        self.updates_count = data.get("_nUpdatesCount", 0)
+        self.has_updates = data.get("_bHasUpdates", False)
+        self.all_todos_count = data.get("_nAllTodosCount", 0)
+        self.has_todos = data.get("_bHasTodos", False)
+        self.post_count = data.get("_nPostCount", 0)
+        self.attributes = data.get("_aAttributes", {})
+        self.tags = data.get("_aTags", [])
+        self.created_by_submitter = data.get("_bCreatedBySubmitter", False)
+        self.is_ported = data.get("_bIsPorted", False)
+        self.thanks_count = data.get("_nThanksCount", 0)
+        self.initial_visibility = data.get("_sInitialVisibility", "")
+        self.download_url = data.get("_sDownloadUrl", "")
+        self.download_count = data.get("_nDownloadCount", 0)
+        self.files = [File(f) for f in data.get("_aFiles", [])]
+        self.subscriber_count = data.get("_nSubscriberCount", 0)
+        self.studio = Studio(data["_aStudio"]) if "_aStudio" in data else None
+        self.contributing_studios = data.get("_aContributingStudios", [])
+        self.license = data.get("_sLicense", "")
+        self.license_checklist = (
+            LicenseChecklist(data["_aLicenseChecklist"])
+            if "_aLicenseChecklist" in data
+            else None
         )
+        self.description = data.get("_sDescription", "")
+        self.generate_table_of_contents = data.get("_bGenerateTableOfContents", False)
+        self.text = data.get("_sText", "")
+        self.like_count = data.get("_nLikeCount", 0)
+        self.view_count = data.get("_nViewCount", 0)
+        self.is_mapped = data.get("_bIsMapped", False)
+        self.is_textured = data.get("_bIsTextured", False)
+        self.is_animated = data.get("_xIsAnimated", "")
+        self.accepts_donations = data.get("_bAcceptsDonations", False)
+        self.show_ripe_promo = data.get("_bShowRipePromo", False)
+        self.embeddables = [Embeddable(item) for item in data.get("_aEmbeddables", [])]
+        self.submitter = Member(data["_aSubmitter"]) if "_aSubmitter" in data else None
+        self.category = (
+            ModCategory(data["_aCategory"]) if "_aCategory" in data else None
+        )
+        self.credits = Credits(data) if "_aCredits" in data else None
+        self.advanced_requirements_exist = data.get(
+            "_bAdvancedRequirementsExist", False
+        )
+        self.requirements = data.get("_aRequirements", [])
+        self.accessor_subscription_row_id = data.get("_idAccessorSubscriptionRow", 0)
+        self.accessor_is_subscribed = data.get("_bAccessorIsSubscribed", False)
+        self.accessor_has_thanked = data.get("_bAccessorHasThanked", False)
+        self.accessor_has_unliked = data.get("_bAccessorHasUnliked", False)
+        self.accessor_has_liked = data.get("_bAccessorHasLiked", False)

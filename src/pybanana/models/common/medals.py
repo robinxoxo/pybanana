@@ -12,11 +12,10 @@ class Medals:
     grade_title: str = ""
     date_added: Optional[datetime] = None
 
-    @classmethod
-    def from_dict(cls, data: dict) -> "Medals":
+    def __init__(self, data: dict):
         """Create a Medals instance from a dictionary."""
         if not isinstance(data, dict):
-            return cls()
+            return
 
         try:
             timestamp = data.get("_tsDateAdded", 0)
@@ -24,11 +23,9 @@ class Medals:
         except (ValueError, OSError):
             date_added = None
 
-        return cls(
-            id=data.get("_idRow", 0) or 0,
-            image_url=data.get("_sImage", "") or "",
-            name=data.get("_sName", "") or "",
-            grade=data.get("_sGrade", "") or "",
-            grade_title=data.get("_sGradeTitle", "") or "",
-            date_added=date_added
-        )
+        self.id = data.get("_idRow", 0)
+        self.image_url = data.get("_sImage", "")
+        self.name = data.get("_sName", "")
+        self.grade = data.get("_sGrade", "")
+        self.grade_title = data.get("_sGradeTitle", "")
+        self.date_added = date_added

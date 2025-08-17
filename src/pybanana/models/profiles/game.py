@@ -5,7 +5,7 @@ from datetime import datetime
 
 from ..common.profile import Profile
 from ..common.category import ModCategory
-from ..common.managers import ManagerRecord
+from ..common.managers import Manager
 
 @dataclass
 class GameSection:
@@ -16,50 +16,42 @@ class GameSection:
     category_count: int = 0
     url: str = ""
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "GameSection":
-        return cls(
-            model_name=data.get("_sModelName", "") or "",
-            plural_title=data.get("_sPluralTitle", "") or "",
-            item_count=data.get("_nItemCount", 0) or 0,
-            category_count=data.get("_nCategoryCount", 0) or 0,
-            url=data.get("_sUrl", "") or ""
-        )
+    def __init__(self, data: Dict[str, Any]):
+        self.model_name = data.get("_sModelName", "")
+        self.plural_title = data.get("_sPluralTitle", "")
+        self.item_count = data.get("_nItemCount", 0)
+        self.category_count = data.get("_nCategoryCount", 0)
+        self.url = data.get("_sUrl", "")
+
 
 @dataclass
-class GameProfile:
+class Game(Profile):
     """Game profile information."""
-    base: Profile  # Required field - no default
+
     homepage: str = ""
     is_approved: bool = False 
     sections: List[GameSection] = field(default_factory=list)
     mod_categories: List[ModCategory] = field(default_factory=list)
-    managers: List[ManagerRecord] = field(default_factory=list)
+    managers: List[Manager] = field(default_factory=list)
     abbreviation: Optional[str] = None
     release_date: Optional[datetime] = None
     welcome_message: Optional[str] = None
     description: Optional[str] = None
 
-    def __getattr__(self, name):
-        """Delegate attribute access to base Profile."""
-        return getattr(self.base, name)
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "GameProfile":
-        base = Profile.from_dict(data)     
-        release_date = None
-        if "_tsReleaseDate" in data and data["_tsReleaseDate"]:
-            release_date = datetime.fromtimestamp(data["_tsReleaseDate"])
-                
-        return cls(
-            base=base,
-            homepage=data.get("_sHomepage", ""),
-            is_approved=data.get("_bIsApproved", False),
-            sections=[GameSection.from_dict(section) for section in data.get("_aSections", [])],
-            mod_categories=[ModCategory.from_dict(cat) for cat in data.get("_aModCategories", [])],
-            managers=[ManagerRecord.from_dict(m) for m in data.get("_aManagers", [])],
-            abbreviation=data.get("_sAbbreviation", "") or None,
-            release_date=release_date,
-            welcome_message=data.get("_sWelcomeMessage", "") or "",
-            description=data.get("_sDescription", "") or ""
+    def __init__(self, data: Dict[str, Any]):
+        super().__init__(data)
+        self.homepage = data.get("_sHomepage", "")
+        self.is_approved = data.get("_bIsApproved", False)
+        self.sections = [GameSection(section) for section in data.get("_aSections", [])]
+        self.mod_categories = [
+            ModCategory(cat) for cat in data.get("_aModCategories", [])
+        ]
+        self.managers = [Manager(m) for m in data.get("_aManagers", [])]
+        self.abbreviation = data.get("_sAbbreviation", "") or None
+        self.release_date = (
+            datetime.fromtimestamp(data["_tsReleaseDate"])
+            if "_tsReleaseDate" in data
+            else None
         )
+        self.welcome_message = data.get("_sWelcomeMessage", "") or None
+        self.description = data.get("_sDescription", "") or None

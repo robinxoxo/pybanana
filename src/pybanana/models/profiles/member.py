@@ -11,9 +11,9 @@ from ..common.buddy import Buddy
 from ..common.field import ProfileField
 from ..common.medals import Medals
 
+
 @dataclass
-class MemberProfile:
-    base: Profile
+class Member(Profile):
     user_title: str = ""
     honorary_title: Optional[str] = None
     join_date: datetime = field(default_factory=lambda: datetime.fromtimestamp(0))
@@ -47,42 +47,51 @@ class MemberProfile:
 
     def __getattr__(self, name):
         """Delegate attribute access to base Profile."""
-        return getattr(self.base, name)
+        return getattr(self, name)
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "MemberProfile":
-        base = Profile.from_dict(data)
-        responsibilities = data.get("_aResponsibilities", {})   
-        return cls(
-            base=base,
-            user_title=data.get("_sUserTitle", "") or "",
-            honorary_title=data.get("_sHonoraryTitle", "") or "",
-            join_date=datetime.fromtimestamp(data.get("_tsJoinDate", 0)),
-            avatar_url=data.get("_sAvatarUrl", "") or "",
-            upic_url=data.get("_sUpicUrl", "") or "",
-            hd_avatar_url=data.get("_sHdAvatarUrl", "") or "",
-            hd_hovatar_url=data.get("_sHdHovatarUrl", "") or "",
-            points_url=data.get("_sPointsUrl", "") or "",
-            medals_url=data.get("_sMedalsUrl", "") or "",
-            is_online=data.get("_bIsOnline", False) or False,
-            online_title=data.get("_sOnlineTitle", "") or "",
-            offline_title=data.get("_sOfflineTitle", "") or "",
-            points=data.get("_nPoints", 0) or 0,
-            points_rank=data.get("_nPointsRank", 0) or 0,
-            staff_profile=data.get("_sStaffProfile", "") or "",
-            bio=[Bio.from_dict(bio) for bio in data.get("_aBio", [])],
-            profile_modules=data.get("_aProfileModules", []),
-            online_status=OnlineStatus.from_dict(data["_aOnlineStatus"]) if "_aOnlineStatus" in data else None,
-            core_stats=CoreStats.from_dict(data["_aCoreStats"]) if "_aCoreStats" in data else None,
-            is_banned=data.get("_bIsBanned", False) or False,
-            signature_url=data.get("_sSigUrl", "") or "",
-            clearance_levels=data.get("_aClearanceLevels", {}),
-            responsibilities=responsibilities,
-            modgroups=responsibilities.get("_aModgroups", []),
-            buddies=[Buddy.from_dict(buddy) for buddy in data.get("_aBuddies", [])],
-            contact_info=[ProfileField.from_dict(field) for field in data.get("_aContactInfo", [])],
-            pc_specs=[ProfileField.from_dict(field) for field in data.get("_aPcSpecs", [])],
-            software_kit=[ProfileField.from_dict(field) for field in data.get("_aSoftwareKit", [])],
-            gaming_devices=[ProfileField.from_dict(field) for field in data.get("_aGamingDevices", [])],
-            medals=[Medals.from_dict(medal) for medal in data.get("_aMedals", [])]
+    def __init__(self, data: dict[str, Any]):
+        super().__init__(data)
+        responsibilities = data.get("_aResponsibilities", {})
+        self.responsibilities = responsibilities
+        self.user_title = data.get("_sUserTitle", "") or ""
+        self.honorary_title = data.get("_sHonoraryTitle", "") or ""
+        self.join_date = datetime.fromtimestamp(data.get("_tsJoinDate", 0))
+        self.avatar_url = data.get("_sAvatarUrl", "") or ""
+        self.upic_url = data.get("_sUpicUrl", "") or ""
+        self.hd_avatar_url = data.get("_sHdAvatarUrl", "") or ""
+        self.hd_hovatar_url = data.get("_sHdHovatarUrl", "") or ""
+        self.points_url = data.get("_sPointsUrl", "") or ""
+        self.medals_url = data.get("_sMedalsUrl", "") or ""
+        self.is_online = data.get("_bIsOnline", False) or False
+        self.online_title = data.get("_sOnlineTitle", "") or ""
+        self.offline_title = data.get("_sOfflineTitle", "") or ""
+        self.points = data.get("_nPoints", 0) or 0
+        self.points_rank = data.get("_nPointsRank", 0) or 0
+        self.staff_profile = data.get("_sStaffProfile", "") or ""
+        self.bio = [Bio(bio) for bio in data.get("_aBio", [])]
+        self.profile_modules = data.get("_aProfileModules", [])
+        self.online_status = (
+            OnlineStatus(data["_aOnlineStatus"]) if "_aOnlineStatus" in data else None
         )
+        self.core_stats = (
+            CoreStats(data["_aCoreStats"]) if "_aCoreStats" in data else None
+        )
+        self.is_banned = data.get("_bIsBanned", False) or False
+        self.signature_url = data.get("_sSigUrl", "") or ""
+        self.clearance_levels = data.get("_aClearanceLevels", {})
+        self.responsibilities = responsibilities
+        self.modgroups = responsibilities.get("_aModgroups", [])
+        self.buddies = [Buddy(buddy) for buddy in data.get("_aBuddies", [])]
+        self.contact_info = [
+            ProfileField(field) for field in data.get("_aContactInfo", [])
+        ]
+
+        self.pc_specs = [ProfileField(field) for field in data.get("_aPcSpecs", [])]
+        self.software_kit = [
+            ProfileField(field) for field in data.get("_aSoftwareKit", [])
+        ]
+
+        self.gaming_devices = [
+            ProfileField(field) for field in data.get("_aGamingDevices", [])
+        ]
+        self.medals = [Medals(medal) for medal in data.get("_aMedals", [])]

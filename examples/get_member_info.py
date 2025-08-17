@@ -3,7 +3,7 @@ from pybanana.api import PyBanana
 def main():
     user_id = 1382  # Example user ID (Tom)
     api = PyBanana()
-    
+
     # Get basic member information
     id = 1382 # Example member ID
     member = api.get_member(id)
@@ -13,13 +13,13 @@ def main():
     print(f"Member avatar URL: {member.avatar_url}")
     print(f"Member profile URL: {member.profile_url}")
 
-    profile_data = api.get_member_profile(id)
+    profile_data = api.get_member(id)
     print("Clearance levels:")
     for level in profile_data.clearance_levels:
         print(f"- {level}")
 
     # Get detailed profile information
-    profile = api.get_member_profile(id)
+    profile = api.get_member(id)
     print(f"Member profile URL: {profile.profile_url}")
     print(f"Member points: {profile.points}")
     print(f"Member points rank: {profile.points_rank}")

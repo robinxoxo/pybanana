@@ -2,30 +2,35 @@ import pytest
 from datetime import datetime
 from pybanana.models.member import Member, Moderator
 from pybanana.models.common.profile import Profile
-from pybanana.models.profiles.mod import ModProfile
-from pybanana.models.profiles.game import GameProfile, GameSection
-from pybanana.models.profiles.app import AppProfile, AppFeatures
+from pybanana.models.profiles.mod import Mod
+from pybanana.models.profiles.game import Game, GameSection
+from pybanana.models.profiles.app import App, AppFeatures
 from pybanana.models.common.preview import PreviewMedia, PreviewMediaImage
 from pybanana.models.common.ratings import RatingsSummary, RatingBreakdownItem
 from pybanana.models.common.file import File
-from pybanana.models.profiles.idea import IdeaProfile
-from pybanana.models.profiles.club import ClubProfile
-from pybanana.models.profiles.bug import BugProfile
-from pybanana.models.profiles.studio import StudioProfile, OpenPosition
+from pybanana.models.profiles.idea import Idea
+from pybanana.models.profiles.club import Club
+from pybanana.models.profiles.bug import Bug
+from pybanana.models.profiles.studio import Studio, OpenPosition
 from pybanana.models.common.stats import CoreStats
 from pybanana.models.common.license import LicenseChecklist
 from pybanana.models.common.bio import Bio, BioEntry
-from pybanana.models.common.credits import Author, CreditGroup, AffiliatedStudio, Credits
+from pybanana.models.common.credits import (
+    Author,
+    CreditGroup,
+    AffiliatedStudio,
+    Credits,
+)
 from pybanana.models.common.embeddable import Embeddable
 from pybanana.models.common.online import OnlineStatus
-from pybanana.models.common.managers import ManagerRecord
-from pybanana.models.common.moderators import ModeratorRecord
+from pybanana.models.common.managers import Manager
+from pybanana.models.common.moderators import Moderator
 from pybanana.models.common.category import ModCategory
 
 def test_empty_member():
     """Test Member with empty data should have default values"""
     empty_data = {}
-    member = Member.from_dict(empty_data)
+    member = Member(empty_data)
     assert member.id == 0
     assert member.name == ""
     assert member.is_online is False
@@ -36,7 +41,7 @@ def test_empty_member():
 def test_empty_profile():
     """Test Profile with empty data should have default values"""
     empty_data = {}
-    profile = Profile.from_dict(empty_data)
+    profile = Profile(empty_data)
     assert profile.id is None
     assert profile.status is None
     assert profile.is_private is None
@@ -49,7 +54,7 @@ def test_empty_profile():
 def test_empty_mod_profile():
     """Test ModProfile with empty data"""
     empty_data = {}
-    profile = ModProfile.from_dict(empty_data)
+    profile = Mod(empty_data)
     assert profile.feedback_instructions == ""
     assert profile.accessor_is_submitter is False
     assert profile.is_trashed is False
@@ -60,7 +65,7 @@ def test_empty_mod_profile():
 def test_empty_game_profile():
     """Test GameProfile with empty data"""
     empty_data = {}
-    profile = GameProfile.from_dict(empty_data)
+    profile = Game(empty_data)
     assert profile.homepage == ""
     assert profile.is_approved is False
     assert profile.sections == []
@@ -70,7 +75,7 @@ def test_empty_game_profile():
 def test_empty_app_profile():
     """Test AppProfile with empty data"""
     empty_data = {}
-    profile = AppProfile.from_dict(empty_data)
+    profile = App(empty_data)
     assert profile.description == ""
     assert profile.include_variable_name == ""
     assert profile.version == ""
@@ -94,7 +99,7 @@ def test_empty_app_profile():
         "_bAcceptsDonations": False,
         "_bAccessorHasApp": False
     }
-    profile = AppProfile.from_dict(min_data)
+    profile = App(min_data)
     assert profile.description == ""
     assert profile.include_variable_name == ""
     assert profile.version == ""
@@ -108,7 +113,7 @@ def test_empty_app_profile():
 def test_empty_ratings_summary():
     """Test RatingsSummary with empty data"""
     empty_data = {}
-    summary = RatingsSummary.from_dict(empty_data)
+    summary = RatingsSummary(empty_data)
     assert summary.ratings_count == 0
     assert summary.cumulative_rating == 0
     assert summary.cumulative_positivity == 0
@@ -119,7 +124,7 @@ def test_empty_ratings_summary():
 def test_empty_file():
     """Test File with empty data"""
     empty_data = {}
-    file = File.from_dict(empty_data)
+    file = File(empty_data)
     assert file.id == 0
     assert file.filename == ""
     assert file.filesize == 0
@@ -138,7 +143,7 @@ def test_empty_file():
 def test_empty_idea_profile():
     """Test IdeaProfile with empty data"""
     empty_data = {}
-    profile = IdeaProfile.from_dict(empty_data)
+    profile = Idea(empty_data)
     assert profile.text == ""
     assert profile.post_count == 0
     assert profile.has_revisions is False
@@ -154,7 +159,7 @@ def test_empty_idea_profile():
 def test_empty_club_profile():
     """Test ClubProfile with empty data"""
     empty_data = {}
-    profile = ClubProfile.from_dict(empty_data)
+    profile = Club(empty_data)
     assert profile.status == 0
     assert profile.is_private is False
     assert isinstance(profile.date_modified, datetime)
@@ -188,7 +193,7 @@ def test_empty_bug_profile():
     """Test BugProfile with empty data"""
     empty_data = {}
     # BugProfile should handle empty data with defaults
-    profile = BugProfile.from_dict(empty_data)
+    profile = Bug(empty_data)
     assert profile.status == 0
     assert profile.is_private is False
     assert isinstance(profile.date_modified, datetime)
@@ -245,7 +250,7 @@ def test_empty_bug_profile():
             "_sAvatarUrl": ""
         }
     }
-    profile = BugProfile.from_dict(min_data)
+    profile = Bug(min_data)
     assert profile.status == 0
     assert profile.is_private is False
     assert isinstance(profile.date_modified, datetime)
@@ -254,7 +259,7 @@ def test_empty_bug_profile():
 def test_empty_studio_profile():
     """Test StudioProfile with empty data"""
     empty_data = {}
-    profile = StudioProfile.from_dict(empty_data)
+    profile = Studio(empty_data)
     assert profile.motto is None
     assert profile.join_mode == ""
     assert profile.flag_url is None
@@ -267,14 +272,14 @@ def test_empty_preview_media():
     """Test PreviewMedia with empty data"""
     empty_data = {}
     # PreviewMedia should initialize with empty lists
-    media = PreviewMedia.from_dict(empty_data)
+    media = PreviewMedia(empty_data)
     assert media.images == []
     assert media.metadata == {}
 
 def test_empty_core_stats():
     """Test CoreStats with empty data"""
     empty_data = {}
-    stats = CoreStats.from_dict(empty_data)
+    stats = CoreStats(empty_data)
     assert stats.account_age == ""
     assert stats.current_submissions == 0
     assert stats.current_subscribers == 0
@@ -286,7 +291,7 @@ def test_empty_core_stats():
 def test_empty_license_checklist():
     """Test LicenseChecklist with empty data"""
     empty_data = {}
-    checklist = LicenseChecklist.from_dict(empty_data)
+    checklist = LicenseChecklist(empty_data)
     assert checklist.yes == []
     assert checklist.ask == []
     assert checklist.no == []
@@ -295,7 +300,7 @@ def test_empty_bio_entry():
     """Test BioEntry with various empty, None, and missing field scenarios"""
     # Test with empty data
     empty_data = {}
-    entry = BioEntry.from_dict(empty_data)
+    entry = BioEntry(empty_data)
     assert entry.title == ""
     assert entry.value == ""
     assert entry.custom_title == ""
@@ -306,7 +311,7 @@ def test_empty_bio_entry():
         "_sValue": None,
         "_sCustomTitle": None
     }
-    entry = BioEntry.from_dict(none_data)
+    entry = BioEntry(none_data)
     assert entry.title == ""
     assert entry.value == ""
     assert entry.custom_title == ""
@@ -316,7 +321,7 @@ def test_empty_bio_entry():
         "_sTitle": "Test Title"
         # _sValue and _sCustomTitle are missing
     }
-    entry = BioEntry.from_dict(partial_data)
+    entry = BioEntry(partial_data)
     assert entry.title == "Test Title"
     assert entry.value == ""
     assert entry.custom_title == ""
@@ -325,17 +330,17 @@ def test_empty_bio():
     """Test Bio with various empty, None, and missing field scenarios"""
     # Test with empty data
     empty_data = {}
-    bio = Bio.from_dict(empty_data)
+    bio = Bio(empty_data)
     assert bio.entries == []
 
     # Test with None _aBio
     none_data = {"_aBio": None}
-    bio = Bio.from_dict(none_data)
+    bio = Bio(none_data)
     assert bio.entries == []
 
     # Test with empty _aBio list
     empty_list_data = {"_aBio": []}
-    bio = Bio.from_dict(empty_list_data)
+    bio = Bio(empty_list_data)
     assert bio.entries == []
 
     # Test with direct bio entry format
@@ -343,7 +348,7 @@ def test_empty_bio():
         "_sTitle": "Direct Title",
         "_sValue": "Direct Value"
     }
-    bio = Bio.from_dict(direct_entry)
+    bio = Bio(direct_entry)
     assert len(bio.entries) == 1
     assert bio.entries[0].title == "Direct Title"
     assert bio.entries[0].value == "Direct Value"
@@ -365,7 +370,7 @@ def test_empty_bio():
             }
         ]
     }
-    bio = Bio.from_dict(mixed_data)
+    bio = Bio(mixed_data)
     assert len(bio.entries) == 4
     assert bio.entries[0].title == "Valid Title"
     assert bio.entries[0].value == "Valid Value"
@@ -379,7 +384,7 @@ def test_empty_bio():
 def test_empty_credit_group():
     """Test CreditGroup with empty data"""
     empty_data = {}
-    group = CreditGroup.from_dict(empty_data)
+    group = CreditGroup(empty_data)
     assert group.group_name == ""
     assert isinstance(group.authors, list)
     assert len(group.authors) == 0
@@ -387,7 +392,7 @@ def test_empty_credit_group():
 def test_empty_affiliated_studio():
     """Test AffiliatedStudio with empty data"""
     empty_data = {}
-    studio = AffiliatedStudio.from_dict(empty_data)
+    studio = AffiliatedStudio(empty_data)
     assert studio.profile_url == ""
     assert studio.name == ""
     assert studio.flag_url == ""
@@ -396,7 +401,7 @@ def test_empty_affiliated_studio():
 def test_empty_author():
     """Test Author with empty data"""
     empty_data = {}
-    author = Author.from_dict(empty_data)
+    author = Author(empty_data)
     assert author.role == ""
     assert author.name == ""
     assert author.id == 0
@@ -408,7 +413,7 @@ def test_empty_author():
 def test_empty_open_position():
     """Test OpenPosition with empty data"""
     empty_data = {}
-    position = OpenPosition.from_dict(empty_data)
+    position = OpenPosition(empty_data)
     assert position.skill_id == ""
     assert position.skill == ""
     assert position.game_id == ""
@@ -419,7 +424,7 @@ def test_empty_open_position():
 def test_empty_game_section():
     """Test GameSection with empty data"""
     empty_data = {}
-    section = GameSection.from_dict(empty_data)
+    section = GameSection(empty_data)
     assert section.plural_title == ""
     assert section.item_count == 0
     assert section.category_count == 0
@@ -428,7 +433,7 @@ def test_empty_game_section():
 def test_empty_app_features():
     """Test AppFeatures with empty data"""
     empty_data = {}
-    features = AppFeatures.from_dict(empty_data)
+    features = AppFeatures(empty_data)
     assert features.profile_module_url == ""
     assert features.navigator_tab_url == ""
     assert features.main_url == ""
@@ -437,7 +442,7 @@ def test_empty_app_features():
 def test_empty_preview_media_image():
     """Test PreviewMediaImage with empty data"""
     empty_data = {}
-    image = PreviewMediaImage.from_dict(empty_data)
+    image = PreviewMediaImage(empty_data)
     assert image.url == ""
     assert image.width is None
     assert image.height is None 
@@ -446,7 +451,7 @@ def test_empty_preview_media_image():
 def test_empty_online_status():
     """Test OnlineStatus with empty data"""
     empty_data = {}
-    status = OnlineStatus.from_dict(empty_data)
+    status = OnlineStatus(empty_data)
     assert status.is_online is False
     assert status.location == ""
     assert isinstance(status.last_seen_time, datetime)
@@ -455,7 +460,7 @@ def test_empty_online_status():
 def test_empty_manager_record():
     """Test ManagerRecord with empty data"""
     empty_data = {}
-    manager = ManagerRecord.from_dict(empty_data)
+    manager = Manager(empty_data)
     assert isinstance(manager.member, Member)
     assert manager.modgroups == []
     assert manager.date_added is None
@@ -463,7 +468,7 @@ def test_empty_manager_record():
 def test_empty_mod_category():
     """Test ModCategory with empty data"""
     empty_data = {}
-    category = ModCategory.from_dict(empty_data)
+    category = ModCategory(empty_data)
     assert category.id == 0
     assert category.name == ""
     assert category.item_count == 0
@@ -478,7 +483,7 @@ def test_empty_mod_category():
         "_nCategoryCount": None,
         "_sUrl": None
     }
-    category = ModCategory.from_dict(none_data)
+    category = ModCategory(none_data)
     assert category.id == 0
     assert category.name == ""
     assert category.item_count == 0
@@ -493,7 +498,7 @@ def test_empty_mod_category():
         # _nCategoryCount missing
         "_sUrl": None
     }
-    category = ModCategory.from_dict(mixed_data)
+    category = ModCategory(mixed_data)
     assert category.id == 1
     assert category.name == ""
     assert category.item_count == 5
@@ -503,7 +508,7 @@ def test_empty_mod_category():
 def test_empty_embeddable():
     """Test Embeddable with empty data"""
     empty_data = {}
-    embeddable = Embeddable.from_dict(empty_data)
+    embeddable = Embeddable(empty_data)
     assert embeddable.image_base_url == ""
     assert isinstance(embeddable.variants, list)
     assert len(embeddable.variants) == 0
@@ -511,24 +516,24 @@ def test_empty_embeddable():
 def test_empty_moderator_record():
     """Test ModeratorRecord with empty data"""
     empty_data = {}
-    moderator = ModeratorRecord.from_dict(empty_data)
-    assert isinstance(moderator.member, Member)
+    moderator = Moderator(empty_data)
+    assert isinstance(moderator, Member)
     assert moderator.staff_bio == ""
     assert moderator.modgroups == []
 
 def test_empty_rating_breakdown_item():
     """Test RatingBreakdownItem with empty data"""
     empty_data = {}
-    item = RatingBreakdownItem.from_dict(empty_data)
+    item = RatingBreakdownItem(empty_data)
     assert item.count == 0
     assert item.verb == ""
     assert item.icon_url == ""
     assert item.icon_classes == ""
-    
+
 def test_empty_moderator():
     """Test Moderator with empty data"""
     empty_data = {}
-    moderator = Moderator.from_dict(empty_data)
+    moderator = Moderator(empty_data)
     assert moderator.id == 0
     assert moderator.name == ""
     assert moderator.is_online is False

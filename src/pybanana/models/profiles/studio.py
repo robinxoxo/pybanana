@@ -1,12 +1,9 @@
 """Studio profile and related functionality."""
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional
-from datetime import datetime
 
 from ..member import Member
 from ..common.profile import Profile
-from ..common.preview import PreviewMedia
-from ..common.category import ModCategory
 
 @dataclass
 class OpenPosition:
@@ -17,20 +14,18 @@ class OpenPosition:
     game: Dict[str, str] = field(default_factory=lambda: {"name": "", "url": ""})
     notes: str = ""
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "OpenPosition":
-        return cls(
-            skill_id=data.get("_idSkillRow", "") or "",
-            skill=data.get("_sSkill", "") or "",
-            game_id=data.get("_idGameRow", "") or "",
-            game=data.get("_aGame") or {"name": "", "url": ""},
-            notes=data.get("_sNotes", "") or ""
-        )
+    def __init__(self, data: Dict[str, Any]):
+        self.skill_id = data.get("_idSkillRow", "")
+        self.skill = data.get("_sSkill", "")
+        self.game_id = data.get("_idGameRow", "")
+        self.game = data.get("_aGame", {"name": "", "url": ""})
+        self.notes = data.get("_sNotes", "")
+
 
 @dataclass
-class StudioProfile:
+class Studio(Profile):
     """Studio profile information."""
-    base: Profile
+
     motto: Optional[str] = None
     join_mode: str = ""
     flag_url: Optional[str] = None
@@ -48,24 +43,28 @@ class StudioProfile:
 
     def __getattr__(self, name):
         """Delegate attribute access to base Profile."""
-        return getattr(self.base, name)
+        return getattr(self, name)
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "StudioProfile":
-        base = Profile.from_dict(data)
-        return cls(
-            base=base,
-            motto=data.get("_sMotto"),
-            join_mode=data.get("_sJoinMode", ""),
-            flag_url=data.get("_sFlagUrl"),
-            banner_url=data.get("_sBannerUrl"),
-            member_count=data.get("_iMemberCount", 0),  # Added default
-            post_count=data.get("_nPostCount", 0),  # Added default
-            social_links=data.get("_aSocialLinks", []),
-            profile_template=data.get("_sProfileTemplate", ""),
-            profile_modules=data.get("_aProfileModules", []),
-            open_positions=[OpenPosition.from_dict(pos) for pos in data.get("_aOpenPositions", [])],
-            leadership=[member for member in (Member.from_dict(m) for m in data.get("_aLeadership", [])) if member is not None],
-            accessor_is_in_guild=data.get("_bAccessorIsInGuild", False),
-            accessor_has_pending_join_request=data.get("_bAccessorHasPendingJoinRequest", False)
+    def __init__(self, data: Dict[str, Any]):
+        super().__init__(data)
+        self.motto = data.get("_sMotto", "")
+        self.join_mode = data.get("_sJoinMode", "")
+        self.flag_url = data.get("_sFlagUrl", "")
+        self.banner_url = data.get("_sBannerUrl", "")
+        self.member_count = data.get("_iMemberCount", 0)
+        self.post_count = data.get("_nPostCount", 0)
+        self.social_links = data.get("_aSocialLinks", [])
+        self.profile_template = data.get("_sProfileTemplate", "")
+        self.profile_modules = data.get("_aProfileModules", [])
+        self.open_positions = [
+            OpenPosition(pos) for pos in data.get("_aOpenPositions", [])
+        ]
+        self.leadership = [
+            member
+            for member in (Member(m) for m in data.get("_aLeadership", []))
+            if member is not None
+        ]
+        self.accessor_is_in_guild = data.get("_bAccessorIsInGuild", False)
+        self.accessor_has_pending_join_request = data.get(
+            "_bAccessorHasPendingJoinRequest", False
         )

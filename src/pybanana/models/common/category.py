@@ -10,15 +10,12 @@ class ModCategory:
     category_count: int = 0
     url: str = ""
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "ModCategory":
+    def __init__(self, data: Dict[str, Any]):
         if not isinstance(data, dict):
-            return cls()
+            return
 
-        return cls(
-            id=data.get("_idRow", 0) or 0,
-            name=data.get("_sName", "") or "",
-            item_count=data.get("_nItemCount", 0) or 0,
-            category_count=data.get("_nCategoryCount", 0) or 0,
-            url=data.get("_sUrl", "") or ""
-        )
+        self.id = data.get("_idRow", 0)
+        self.name = data.get("_sName", "")
+        self.item_count = data.get("_nItemCount", 0)
+        self.category_count = data.get("_nCategoryCount", 0)
+        self.url = data.get("_sUrl", "")

@@ -1,20 +1,20 @@
 """Profile models for different GameBanana content types."""
-from .app import AppProfile
-from .game import GameProfile
-from .member import MemberProfile
-from .idea import IdeaProfile
-from .bug import BugProfile
-from .mod import ModProfile
-from .studio import StudioProfile
-from .club import ClubProfile
+from .app import App
+from .game import Game
+from .member import Member
+from .idea import Idea
+from .bug import Bug
+from .mod import Mod
+from .studio import Studio
+from .club import Club
 
 __all__ = [
-    'AppProfile',
-    'GameProfile',
-    'MemberProfile',
-    'IdeaProfile',
-    'BugProfile',
-    'ModProfile',
-    'StudioProfile',
-    'ClubProfile',
+    "App",
+    "Game",
+    "Member",
+    "Idea",
+    "Bug",
+    "Mod",
+    "Studio",
+    "Club",
 ]
