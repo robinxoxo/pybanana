@@ -3,9 +3,9 @@ from datetime import datetime
 from pybanana.models.member import Member
 from pybanana.models.common.profile import Profile
 from pybanana.models.common.preview import PreviewMedia
-from pybanana.models.common.category import ModCategory 
+from pybanana.models.common.category import ModCategory
 from pybanana.models.profiles.game import GameSection
-from pybanana.models.common.discussion import Submission, Post, DiscussionRecord
+from pybanana.models.common.discussion import Submission, Post, Discussion
 
 def test_submission():
     test_data = {
@@ -52,17 +52,17 @@ def test_submission():
         '_bIsOwnedByAccessor': True
     }
 
-    submission = Submission.from_dict(test_data)
+    submission = Submission(test_data)
 
     # Test base Profile fields
-    assert isinstance(submission.base, Profile)
-    assert submission.base.id == 123
-    assert submission.base.profile_url == 'https://gamebanana.com/discussions/123'
-    assert submission.base.name == 'Test Discussion'
-    assert submission.base.status == 1
-    assert submission.base.is_private is False
-    assert isinstance(submission.base.date_modified, datetime)
-    assert isinstance(submission.base.date_added, datetime)
+    assert isinstance(submission, Profile)
+    assert submission.id == 123
+    assert submission.profile_url == "https://gamebanana.com/discussions/123"
+    assert submission.name == "Test Discussion"
+    assert submission.status == 1
+    assert submission.is_private is False
+    assert isinstance(submission.date_modified, datetime)
+    assert isinstance(submission.date_added, datetime)
 
     # Test Submission specific fields
     assert submission.model_name == 'Thread'
@@ -87,7 +87,7 @@ def test_submission():
 
 def test_submission_empty():
     test_data = {}
-    submission = Submission.from_dict(test_data)
+    submission = Submission(test_data)
     assert submission is None
 
 def test_post():
@@ -105,7 +105,7 @@ def test_post():
         }
     }
 
-    post = Post.from_dict(test_data)
+    post = Post(test_data)
 
     assert post.id == 789
     assert post.date_added == 1234567890
@@ -116,7 +116,7 @@ def test_post():
 
 def test_post_empty():
     test_data = {}
-    post = Post.from_dict(test_data)
+    post = Post(test_data)
     assert post is None
 
 def test_discussion_record():
@@ -138,10 +138,10 @@ def test_discussion_record():
         }
     }
 
-    record = DiscussionRecord.from_dict(test_data)
+    record = Discussion(test_data)
 
     assert isinstance(record.submission, Submission)
-    assert record.submission.base.id == 123
+    assert record.submission.id == 123
     assert record.submission.model_name == 'Thread'
     assert isinstance(record.post, Post)
     assert record.post.id == 789
@@ -149,7 +149,7 @@ def test_discussion_record():
 
 def test_discussion_record_empty():
     test_data = {}
-    record = DiscussionRecord.from_dict(test_data)
-    assert isinstance(record, DiscussionRecord)
+    record = Discussion(test_data)
+    assert isinstance(record, Discussion)
     assert record.submission is None
     assert record.post is None

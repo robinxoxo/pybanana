@@ -8,37 +8,35 @@ class BioEntry:
     value: str = ""
     custom_title: str = ""
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, str]) -> "BioEntry":
+    def __init__(self, data: Dict[str, str]):
         if not isinstance(data, dict):
-            return cls()
-            
-        return cls(
-            title=data.get("_sTitle", "") or "",
-            value=data.get("_sValue", "") or "",
-            custom_title=data.get("_sCustomTitle", "") or ""
-        )
+            return
+
+        self.title = data.get("_sTitle", "")
+        self.value = data.get("_sValue", "")
+        self.custom_title = data.get("_sCustomTitle", "")
+
 
 @dataclass
 class Bio:
     entries: List[BioEntry] = field(default_factory=list)
 
-    @classmethod
-    def from_dict(cls, data: Union[Dict[str, Any], List[Dict[str, Any]]]) -> "Bio":
+    def __init__(self, data: Union[Dict[str, Any], List[Dict[str, Any]]]):
         if not isinstance(data, (dict, list)):
-            return cls()
-            
+            return
+
         if isinstance(data, list):
-            return cls()
-            
+            return
+
         # Handle direct bio entry format
         if all(key in data for key in ["_sTitle", "_sValue"]):
-            return cls(entries=[BioEntry.from_dict(data)])
-            
+            self.entries = [BioEntry(data)]
+            return
+
         # Handle wrapped bio entries format
         bio_entries = data.get("_aBio", []) or []
         if not isinstance(bio_entries, list):
             bio_entries = []
-            
-        entries = [BioEntry.from_dict(entry) for entry in bio_entries]
-        return cls(entries=entries)
+            return
+
+        self.entries = [BioEntry(entry) for entry in bio_entries]

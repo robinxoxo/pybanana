@@ -2,25 +2,34 @@ import pytest
 from datetime import datetime
 from pybanana.models.member import Member, Moderator
 from pybanana.models.common.buddy import Buddy, SubjectShaper
-from pybanana.models.common.managers import ManagerRecord
-from pybanana.models.common.moderators import ModeratorRecord
-from pybanana.models.common.credits import Credits, Author, CreditGroup, AffiliatedStudio
+from pybanana.models.common.managers import Manager
+from pybanana.models.common.moderators import Moderator
+from pybanana.models.common.credits import (
+    Credits,
+    Author,
+    CreditGroup,
+    AffiliatedStudio,
+)
 from pybanana.models.common.profile import Profile
-from pybanana.models.profiles.member import MemberProfile
-from pybanana.models.profiles.mod import ModProfile
+from pybanana.models.profiles.member import Member
+from pybanana.models.profiles.mod import Mod
 from pybanana.models.common.online import OnlineStatus
 from pybanana.models.common.stats import CoreStats
 from pybanana.models.common.bio import Bio
 from pybanana.models.common.preview import PreviewMedia, PreviewMediaImage
 from pybanana.models.common.license import LicenseChecklist
-from pybanana.models.profiles.game import GameSection, GameProfile
-from pybanana.models.profiles.app import AppFeatures, AppProfile
-from pybanana.models.profiles.studio import OpenPosition, StudioProfile
-from pybanana.models.profiles.club import ClubProfile
-from pybanana.models.common.responses import ModeratorResponse, GameManagerResponse, ResultResponse
+from pybanana.models.profiles.game import GameSection, Game
+from pybanana.models.profiles.app import AppFeatures, App
+from pybanana.models.profiles.studio import OpenPosition, Studio
+from pybanana.models.profiles.club import Club
+from pybanana.models.common.responses import (
+    ModeratorResponse,
+    GameManagerResponse,
+    ResultResponse,
+)
 from pybanana.models.common.ratings import RatingsSummary
-from pybanana.models.profiles.bug import BugProfile
-from pybanana.models.profiles.idea import IdeaProfile
+from pybanana.models.profiles.bug import Bug
+from pybanana.models.profiles.idea import Idea
 from pybanana.models.common.embeddable import Embeddable
 from pybanana.models.common.category import ModCategory
 from pybanana.models.common.file import File
@@ -42,10 +51,10 @@ def test_manager_record():
     }
 
     # Create ManagerRecord instance
-    record = ManagerRecord.from_dict(test_data)
+    record = Manager(test_data)
 
     # Assert record data
-    assert isinstance(record, ManagerRecord)
+    assert isinstance(record, Manager)
     assert isinstance(record.member, Member)
     assert record.member.id == 123
     assert record.member.name == 'TestUser'
@@ -67,14 +76,14 @@ def test_moderator_record():
         '_aModgroups': ['admin', 'moderator', 'support']
     }
 
-    record = ModeratorRecord.from_dict(test_data)
+    record = Moderator(test_data)
 
     # Assert record data
-    assert isinstance(record, ModeratorRecord)
-    assert isinstance(record.member, Member)
-    assert record.member.id == 456
-    assert record.member.name == 'ModUser'
-    assert record.member.is_online is False
+    assert isinstance(record, Moderator)
+    assert isinstance(record, Member)
+    assert record.id == 456
+    assert record.name == "ModUser"
+    assert record.is_online is False
     assert record.staff_bio == 'Test staff bio'
     assert record.modgroups == ['admin', 'moderator', 'support']
 
@@ -103,14 +112,14 @@ def test_credits():
         }]
     }
 
-    credits = Credits.from_dict(test_data)
+    credits = Credits(test_data)
 
     assert len(credits.groups) == 1
     group = credits.groups[0]
     assert isinstance(group, CreditGroup)
     assert group.group_name == 'Development Team'
     assert len(group.authors) == 2
-    
+
     # Test first author
     author1 = group.authors[0]
     assert isinstance(author1, Author)
@@ -132,10 +141,10 @@ def test_credits():
     assert author2.is_online is False
 
 def test_credits_empty():
-    credits = Credits.from_dict([])
+    credits = Credits([])
     assert len(credits.groups) == 0
 
-    credits = Credits.from_dict(None)
+    credits = Credits(None)
     assert len(credits.groups) == 0
 
 def test_profile():
@@ -153,7 +162,7 @@ def test_profile():
         '_bShowRipePromo': False
     }
 
-    profile = Profile.from_dict(test_data)
+    profile = Profile(test_data)
 
     assert profile.id == 101
     assert profile.status == 1
@@ -210,9 +219,9 @@ def test_member_profile():
         '_aClearanceLevels': ['user', 'moderator']
     }
 
-    profile = MemberProfile.from_dict(test_data)
+    profile = Member(test_data)
 
-    assert isinstance(profile.base, Profile)
+    assert isinstance(profile, Profile)
     assert profile.user_title == 'Pro Member'
     assert isinstance(profile.join_date, datetime)
     assert profile.avatar_url == 'https://gamebanana.com/avatars/102.jpg'
@@ -228,7 +237,7 @@ def test_member_profile():
     assert isinstance(profile.core_stats, CoreStats)
     assert profile.is_banned is False
     assert profile.clearance_levels == ['user', 'moderator']
-    
+
     # Test CoreStats details
     assert profile.core_stats.account_age == '2 years'
     assert profile.core_stats.current_submissions == 15
@@ -240,43 +249,43 @@ def test_member_profile():
 
 def test_mod_profile():
     test_data = {
-        # Base profile data - required for Profile.from_dict
-        '_idRow': 103,
-        '_sProfileUrl': 'https://gamebanana.com/mods/103',
-        '_sName': 'Test Mod',
-        '_nStatus': 1,
-        '_bIsPrivate': False,
-        '_tsDateModified': 1234567890,
-        '_tsDateAdded': 1234567880,
-        '_bHasFiles': True,
-        '_nSubscriberCount': 50,
-        '_bShowRipePromo': False,
+        # Base profile data - required for Profile
+        "_idRow": 103,
+        "_sProfileUrl": "https://gamebanana.com/mods/103",
+        "_sName": "Test Mod",
+        "_nStatus": 1,
+        "_bIsPrivate": False,
+        "_tsDateModified": 1234567890,
+        "_tsDateAdded": 1234567880,
+        "_bHasFiles": True,
+        "_nSubscriberCount": 50,
+        "_bShowRipePromo": False,
         # Mod specific data
-        '_sFeedbackInstructions': 'Leave feedback',
-        '_bAccessorIsSubmitter': False,
-        '_bIsTrashed': False,
-        '_bIsWithheld': False,
-        '_nUpdatesCount': 5,
-        '_bHasUpdates': True,
-        '_nAllTodosCount': 2,
-        '_nPostCount': 15,
-        '_aAttributes': {'category': ['gameplay']},
-        '_aTags': [{'_sName': 'test', '_sValue': 'value'}],
-        '_bCreatedBySubmitter': True,
-        '_bIsPorted': False,
-        '_nThanksCount': 20,
-        '_sInitialVisibility': 'public',
-        '_sDownloadUrl': 'https://gamebanana.com/dl/103',
-        '_nDownloadCount': 1000,
-        '_aFiles': [],
-        '_sDescription': 'Test description',
-        '_nLikeCount': 30,
-        '_nViewCount': 500
+        "_sFeedbackInstructions": "Leave feedback",
+        "_bAccessorIsSubmitter": False,
+        "_bIsTrashed": False,
+        "_bIsWithheld": False,
+        "_nUpdatesCount": 5,
+        "_bHasUpdates": True,
+        "_nAllTodosCount": 2,
+        "_nPostCount": 15,
+        "_aAttributes": {"category": ["gameplay"]},
+        "_aTags": [{"_sName": "test", "_sValue": "value"}],
+        "_bCreatedBySubmitter": True,
+        "_bIsPorted": False,
+        "_nThanksCount": 20,
+        "_sInitialVisibility": "public",
+        "_sDownloadUrl": "https://gamebanana.com/dl/103",
+        "_nDownloadCount": 1000,
+        "_aFiles": [],
+        "_sDescription": "Test description",
+        "_nLikeCount": 30,
+        "_nViewCount": 500,
     }
 
-    profile = ModProfile.from_dict(test_data)
+    profile = Mod(test_data)
 
-    assert isinstance(profile.base, Profile)
+    assert isinstance(profile, Profile)
     assert profile.feedback_instructions == 'Leave feedback'
     assert profile.accessor_is_submitter is False
     assert profile.is_trashed is False
@@ -311,7 +320,7 @@ def test_game_section():
         '_sUrl': 'https://gamebanana.com/games/123/mods'
     }
 
-    section = GameSection.from_dict(test_data)
+    section = GameSection(test_data)
 
     assert section.model_name == 'Mod'
     assert section.plural_title == 'Mods'
@@ -347,9 +356,9 @@ def test_game_profile():
         '_sDescription': 'A test game description'
     }
 
-    profile = GameProfile.from_dict(test_data)
+    profile = Game(test_data)
 
-    assert isinstance(profile.base, Profile)
+    assert isinstance(profile, Profile)
     assert profile.homepage == 'https://example.com/game'
     assert profile.is_approved is True
     assert len(profile.sections) == 1
@@ -369,7 +378,7 @@ def test_app_features():
         '_sSettingsUrl': 'https://gamebanana.com/apps/123/settings'
     }
 
-    features = AppFeatures.from_dict(test_data)
+    features = AppFeatures(test_data)
 
     assert features.profile_module_url == 'https://gamebanana.com/apps/123/profile'
     assert features.navigator_tab_url == 'https://gamebanana.com/apps/123/nav'
@@ -400,9 +409,9 @@ def test_app_profile():
         }
     }
 
-    profile = AppProfile.from_dict(test_data)
+    profile = App(test_data)
 
-    assert isinstance(profile.base, Profile)
+    assert isinstance(profile, Profile)
     assert profile.description == 'A test app'
     assert profile.include_variable_name == 'TEST_APP'
     assert profile.version == '1.0.0'
@@ -423,7 +432,7 @@ def test_open_position():
         '_sNotes': 'Looking for Python developer'
     }
 
-    position = OpenPosition.from_dict(test_data)
+    position = OpenPosition(test_data)
 
     assert position.skill_id == 'skill123'
     assert position.skill == 'Programmer'
@@ -459,9 +468,9 @@ def test_studio_profile():
         '_bAccessorHasPendingJoinRequest': False
     }
 
-    profile = StudioProfile.from_dict(test_data)
+    profile = Studio(test_data)
 
-    assert isinstance(profile.base, Profile)
+    assert isinstance(profile, Profile)
     assert profile.motto == 'Creating awesome stuff'
     assert profile.join_mode == 'application'
     assert profile.flag_url == 'https://gamebanana.com/studios/789/flag.png'
@@ -484,7 +493,7 @@ def test_license_checklist():
         'no': ['sell']
     }
 
-    checklist = LicenseChecklist.from_dict(test_data)
+    checklist = LicenseChecklist(test_data)
 
     assert checklist.yes == ['modify', 'distribute']
     assert checklist.ask == ['commercial']
@@ -504,7 +513,7 @@ def test_preview_media():
         }
     }
 
-    preview = PreviewMedia.from_dict(test_data)
+    preview = PreviewMedia(test_data)
 
     assert len(preview.images) == 1
     assert isinstance(preview.images[0], PreviewMediaImage)
@@ -520,13 +529,13 @@ def test_preview_media_empty():
         '_aMetadata': {}
     }
 
-    preview = PreviewMedia.from_dict(test_data)
+    preview = PreviewMedia(test_data)
 
     assert len(preview.images) == 0
     assert preview.metadata == {}
 
 def test_preview_media_none():
-    preview = PreviewMedia.from_dict({'_aImages': None, '_aMetadata': None})
+    preview = PreviewMedia({"_aImages": None, "_aMetadata": None})
 
     assert len(preview.images) == 0
     assert preview.metadata == {}
@@ -547,13 +556,13 @@ def test_moderator_response():
         ]
     }
 
-    response = ModeratorResponse.from_dict(test_data)
+    response = ModeratorResponse(test_data)
     assert len(response.records) == 2
-    assert isinstance(response.records[0], ModeratorRecord)
-    assert isinstance(response.records[1], ModeratorRecord)
-    assert response.records[0].member.id == 1
-    assert response.records[1].member.name == 'Mod2'
-    
+    assert isinstance(response.records[0], Moderator)
+    assert isinstance(response.records[1], Moderator)
+    assert response.records[0].id == 1
+    assert response.records[1].name == "Mod2"
+
 def test_game_manager_response():
     test_data = {
         '_aMetadata': {'total': 2},
@@ -571,11 +580,11 @@ def test_game_manager_response():
         ]
     }
 
-    response = GameManagerResponse.from_dict(test_data)
+    response = GameManagerResponse(test_data)
     assert response.metadata == {'total': 2}
     assert len(response.records) == 2
-    assert isinstance(response.records[0], ManagerRecord)
-    assert isinstance(response.records[1], ManagerRecord)
+    assert isinstance(response.records[0], Manager)
+    assert isinstance(response.records[1], Manager)
     assert response.records[0].member.id == 1
     assert response.records[1].member.name == 'Manager2'
 
@@ -608,25 +617,24 @@ def test_result_response():
         '_nRecordCount': 2
     }
 
-    response = ResultResponse.from_dict(test_data)
+    response = ResultResponse(test_data)
     assert len(response.records) == 2
-    assert response.record_count == 2
-    
+
     result1 = response.records[0]
     assert isinstance(result1, Result)
-    assert result1.id_row == 1
+    assert result1.id == 1
     assert result1.name == 'Result1'
     assert result1.model_name == 'Mod'
     assert result1.singular_title == 'Mod'
     assert result1.icon_classes == 'icon mod'
-    assert result1.profile_url == 'https://gamebanana.com/mods/1'
+    assert result1.url == "https://gamebanana.com/mods/1"
     assert result1.date_added == 1234567890
     assert result1.date_modified == 1234567891
     assert result1.has_files is True
 
     result2 = response.records[1]
     assert isinstance(result2, Result)
-    assert result2.id_row == 2
+    assert result2.id == 2
     assert result2.name == 'Result2'
     assert result2.model_name == 'Game'
     assert result2.singular_title == 'Game'
@@ -650,7 +658,7 @@ def test_ratings_summary():
         }
     }
 
-    ratings = RatingsSummary.from_dict(test_data)
+    ratings = RatingsSummary(test_data)
 
     assert ratings.ratings_count == 100
     assert ratings.cumulative_rating == 450
@@ -702,9 +710,9 @@ def test_bug_profile():
         }
     }
 
-    profile = BugProfile.from_dict(test_data)
+    profile = Bug(test_data)
 
-    assert isinstance(profile.base, Profile)
+    assert isinstance(profile, Profile)
     assert profile.status == 2
     assert profile.is_private is False
     assert isinstance(profile.date_modified, datetime)
@@ -752,9 +760,9 @@ def test_idea_profile():
         '_aEmbeddables': []
     }
 
-    profile = IdeaProfile.from_dict(test_data)
+    profile = Idea(test_data)
 
-    assert isinstance(profile.base, Profile)
+    assert isinstance(profile, Profile)
     assert profile.text == 'Idea description'
     assert profile.post_count == 3
     assert profile.has_revisions is True
@@ -780,7 +788,7 @@ def test_bio():
         }]
     }
 
-    bio = Bio.from_dict(test_data)
+    bio = Bio(test_data)
 
     assert len(bio.entries) == 1
     entry = bio.entries[0]
@@ -798,7 +806,7 @@ def test_author():
         '_bIsOnline': True
     }
 
-    author = Author.from_dict(test_data)
+    author = Author(test_data)
 
     assert author.role == 'Lead Developer'
     assert author.id == 123
@@ -822,7 +830,7 @@ def test_credit_group():
         ]
     }
 
-    group = CreditGroup.from_dict(test_data)
+    group = CreditGroup(test_data)
 
     assert group.group_name == 'Development Team'
     assert len(group.authors) == 1
@@ -838,7 +846,7 @@ def test_mod_category():
         '_sUrl': 'https://gamebanana.com/games/123/mods/gameplay'
     }
 
-    category = ModCategory.from_dict(test_data)
+    category = ModCategory(test_data)
 
     assert category.id == 42
     assert category.name == 'Gameplay Mods'
@@ -852,7 +860,7 @@ def test_embeddable():
         '_aVariants': ['small', 'medium', 'large']
     }
 
-    embeddable = Embeddable.from_dict(test_data)
+    embeddable = Embeddable(test_data)
 
     assert embeddable.image_base_url == 'https://images.gamebanana.com/embed/123'
     assert embeddable.variants == ['small', 'medium', 'large']
@@ -860,7 +868,7 @@ def test_embeddable():
 def test_embeddable_string_input():
     # For the string input case, we need to wrap it in a dict to match the type signature
     test_data = {'_sEmbeddableImageBaseUrl': 'https://images.gamebanana.com/embed/123'}
-    embeddable = Embeddable.from_dict(test_data)
+    embeddable = Embeddable(test_data)
     assert embeddable.image_base_url == 'https://images.gamebanana.com/embed/123'
     assert embeddable.variants == []
 
@@ -882,7 +890,7 @@ def test_file():
         '_sAvastAvResult': 'clean'
     }
 
-    file = File.from_dict(test_data)
+    file = File(test_data)
 
     assert file.id == 789
     assert file.filename == 'test_mod.zip'
@@ -953,9 +961,9 @@ def test_club_profile():
         ]
     }
 
-    profile = ClubProfile.from_dict(test_data)
+    profile = Club(test_data)
 
-    assert isinstance(profile.base, Profile)
+    assert isinstance(profile, Profile)
     assert profile.status == 1
     assert profile.is_private is False
     assert isinstance(profile.date_modified, datetime)
@@ -981,11 +989,11 @@ def test_club_profile():
     assert profile.profile_modules == ['info', 'members']
     assert profile.accessor_is_in_guild is False
     assert profile.accessor_has_pending_join_request is False
-    
+
     # Test leadership records
     assert len(profile.leadership) == 1
     leader = profile.leadership[0]
-    assert isinstance(leader, ManagerRecord)
+    assert isinstance(leader, Manager)
     assert isinstance(leader.member, Member)
     assert leader.member.id == 456
     assert leader.member.name == 'LeaderUser'
@@ -1003,7 +1011,7 @@ def test_affiliated_studio():
         '_sBannerUrl': 'https://gamebanana.com/studios/789/banner.png'
     }
 
-    studio = AffiliatedStudio.from_dict(test_data)
+    studio = AffiliatedStudio(test_data)
 
     assert studio.profile_url == 'https://gamebanana.com/studios/789'
     assert studio.name == 'Partner Studio'
@@ -1020,7 +1028,7 @@ def test_subject_shaper():
         "_sBorderHoverColor": "#999999"
     }
 
-    shaper = SubjectShaper.from_dict(test_data)
+    shaper = SubjectShaper(test_data)
 
     assert shaper.border_style == "solid"
     assert shaper.font == "Arial"
@@ -1031,8 +1039,8 @@ def test_subject_shaper():
 
 def test_subject_shaper_empty():
     test_data = {}
-    
-    shaper = SubjectShaper.from_dict(test_data)
+
+    shaper = SubjectShaper(test_data)
 
     assert shaper.border_style == ""
     assert shaper.font == ""
@@ -1066,7 +1074,7 @@ def test_buddy():
         "_tsDateAdded": 1234567890
     }
 
-    buddy = Buddy.from_dict(test_data)
+    buddy = Buddy(test_data)
 
     # Test inherited Member fields
     assert buddy.id == 123
@@ -1099,7 +1107,7 @@ def test_buddy_empty():
         "_tsDateAdded": 0
     }
 
-    buddy = Buddy.from_dict(test_data)
+    buddy = Buddy(test_data)
 
     assert buddy.id == 123
     assert buddy.name == "TestBuddy"

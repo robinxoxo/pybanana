@@ -8,18 +8,16 @@ class RatingBreakdownItem:
     negativity: int = 0
     positivity: int = 0
     weight: int = 0
-    
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "RatingBreakdownItem":
+
+    def __init__(self, data: Dict[str, Any]):
         if not isinstance(data, dict):
-            return cls()
-            
-        return cls(
-            count=data.get("_nCount", 0) or 0,
-            negativity=data.get("_nNegativity", 0) or 0,
-            positivity=data.get("_nPositivity", 0) or 0,
-            weight=data.get("_nWeight", 0) or 0
-        )
+            return
+
+        self.count = data.get("_nCount", 0)
+        self.negativity = data.get("_nNegativity", 0)
+        self.positivity = data.get("_nPositivity", 0)
+        self.weight = data.get("_nWeight", 0)
+
 
 @dataclass
 class RatingsSummary:
@@ -33,21 +31,18 @@ class RatingsSummary:
         if self.ratings_breakdown is None:
             self.ratings_breakdown = {}
 
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "RatingsSummary":
+    def __init__(self, data: Dict[str, Any]):
         if not isinstance(data, dict):
-            return cls()
-            
+            return
+
         breakdown = {}
         breakdown_data = data.get("_aRatingsBreakdown", {}) or {}
         if isinstance(breakdown_data, dict):
             for rating_key, rating_data in breakdown_data.items():
-                breakdown[rating_key] = RatingBreakdownItem.from_dict(rating_data)
-                
-        return cls(
-            ratings_count=data.get("_nRatingsCount", 0) or 0,
-            cumulative_rating=data.get("_nCumulativeRating", 0) or 0,
-            cumulative_positivity=data.get("_nCumulativePositivity", 0) or 0,
-            cumulative_negativity=data.get("_nCumulativeNegativity", 0) or 0,
-            ratings_breakdown=breakdown
-        )
+                breakdown[rating_key] = RatingBreakdownItem(rating_data)
+
+        self.ratings_count = data.get("_nRatingsCount", 0)
+        self.cumulative_rating = data.get("_nCumulativeRating", 0)
+        self.cumulative_positivity = data.get("_nCumulativePositivity", 0)
+        self.cumulative_negativity = data.get("_nCumulativeNegativity", 0)
+        self.ratings_breakdown = breakdown

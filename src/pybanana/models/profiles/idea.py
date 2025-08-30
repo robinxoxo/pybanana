@@ -7,9 +7,9 @@ from ..common.profile import Profile
 from ..common.ratings import RatingsSummary
 from ..common.embeddable import Embeddable
 
+
 @dataclass
-class IdeaProfile:
-    base: Profile  # Required field
+class Idea(Profile):
     text: str = ""
     post_count: int = 0
     has_revisions: bool = False
@@ -23,28 +23,22 @@ class IdeaProfile:
 
     def __post_init__(self):
         if self.ratings_summary is None:
-            self.ratings_summary = RatingsSummary.from_dict({})
+            self.ratings_summary = RatingsSummary({})
 
-    def __getattr__(self, name):
-        """Delegate attribute access to base Profile."""
-        return getattr(self.base, name)
-
-    @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "IdeaProfile":
-        base = Profile.from_dict(data)
+    def __init__(self, data: Dict[str, Any]):
+        super().__init__(data)
         # Wrap the ratings data in the expected structure
         ratings_data = {"_aRatingsSummary": data.get("_aRatingsSummary", {})} if "_aRatingsSummary" in data else {}
-        
-        return cls(
-            base=base,
-            text=data.get("_sText", "") or "",
-            post_count=data.get("_nPostCount", 0) or 0,
-            has_revisions=data.get("_bHasRevisions", False),
-            has_changelog=data.get("_bHasChangelog", False),
-            is_private=data.get("_bIsPrivate", False),
-            is_shared=data.get("_bIsShared", False),
-            sorting_priority=data.get("_nSortingPriority", 0) or 0,
-            supports_downvoting=data.get("_bSupportsDownvoting", False),
-            ratings_summary=RatingsSummary.from_dict(ratings_data),
-            embeddables=[Embeddable.from_dict(embed) for embed in data.get("_aEmbeddables", [])]
-        )
+
+        self.text = data.get("_sText", "")
+        self.post_count = data.get("_nPostCount", 0)
+        self.has_revisions = data.get("_bHasRevisions", False)
+        self.has_changelog = data.get("_bHasChangelog", False)
+        self.is_private = data.get("_bIsPrivate", False)
+        self.is_shared = data.get("_bIsShared", False)
+        self.sorting_priority = data.get("_nSortingPriority", 0)
+        self.supports_downvoting = data.get("_bSupportsDownvoting", False)
+        self.ratings_summary = RatingsSummary(ratings_data)
+        self.embeddables = [
+            Embeddable(embed) for embed in data.get("_aEmbeddables", [])
+        ]
