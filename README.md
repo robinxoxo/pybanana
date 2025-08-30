@@ -56,13 +56,12 @@ For detailed documentation and examples, check out:
 ## Requirements
 
 ### Runtime Dependencies
-- Python 3.7+
-- `requests` >= 2.25.0
-- `python-dateutil` >= 2.8.2
+- Python 3.10+
+- `aiohttp` >= 3.12.0
 
 ### Development Dependencies
 - `pytest` >= 8.0.0
-- `requests-mock` >= 1.11.0
+- `pytest-asyncio` >= 1.1.0
 
 ## Error Handling
 All public API methods now return `Optional` types and include built-in error handling. When an API call fails, methods return `None` instead of raising exceptions, allowing for more resilient code:
