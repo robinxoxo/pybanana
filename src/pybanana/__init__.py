@@ -3,7 +3,7 @@ PyBanana - A Python wrapper for the GameBanana API.
 """
 
 # Package metadata
-__version__ = "0.4.5"
+__version__ = "0.5.0"
 __author__ = "robin"
 __license__ = "MIT"
 

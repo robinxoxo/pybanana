@@ -7,17 +7,16 @@ with open(os.path.join(os.path.abspath(os.path.dirname(__file__)), "README.md"),
 
 setup(
     name="pybanana",
-    version="0.4.5",
+    version="0.5.0",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     install_requires=[
-        "requests>=2.25.0",
-        "python-dateutil>=2.8.2",
+        "aiohttp>=3.12.0",
     ],
     extras_require={
         "dev": [
             "pytest>=8.0.0",
-            "requests-mock>=1.11.0",
+            "pytest-asyncio>=1.1.0",
         ],
     },
     author="robin",
@@ -27,9 +26,16 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/robinxoxo/pybanana",
     classifiers=[
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
+        "Development Status :: 4 - Beta",
+        "Intended Audience :: Developers",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
     ],
-    python_requires=">=3.7",
+    python_requires=">=3.10",
+    keywords="gamebanana api wrapper async mods gaming",
 )

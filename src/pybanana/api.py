@@ -5,7 +5,6 @@ from types import TracebackType
 from typing import Any, Dict, List, Optional
 
 # Third party imports
-import requests
 import aiohttp
 
 # Local imports
